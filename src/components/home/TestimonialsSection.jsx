@@ -1,0 +1,176 @@
+import avatar1 from '../../assets/img_home/Container.png'
+import avatar2 from '../../assets/img_home/Container (1).png'
+import avatar3 from '../../assets/img_home/Container (2).png'
+import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination, Autoplay } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+
+const TESTIMONIALS = [
+  {
+    name: 'عبدالله محمود',
+    rating: 5,
+    role: 'مدير جديد',
+    text: 'أفضل منصة تعليمية في مجال المحاسبة، المحتوى عملي والشهادة أضافت قيمة كبيرة لمسيرتي الذاتية.',
+    avatar: avatar1,
+  },
+  {
+    name: 'سارة علي',
+    rating: 5,
+    role: 'محاسبة',
+    text: 'شرح واضح وأمثلة عملية. قدرت أطبق اللي اتعلمته مباشرة في شغلي.',
+    avatar: avatar2,
+  },
+  {
+    name: 'محمد حسن',
+    rating: 5,
+    role: 'محلل مالي',
+    text: 'تنظيم ممتاز ودعم سريع. المحتوى محدث وسهل المتابعة خطوة بخطوة.',
+    avatar: avatar3,
+  },
+  {
+    name: 'ريم الحربي',
+    rating: 5,
+    role: 'صاحبة مشروع',
+    text: 'الدورات ساعدتني أفهم التقارير المالية وأحسّن قراراتي في إدارة المشروع.',
+    avatar: avatar1,
+  },
+  {
+    name: 'أحمد سالم',
+    rating: 5,
+    role: 'مدقق مبتدئ',
+    text: 'محتوى قوي وتمارين مفيدة، فرق معايا جدًا في فهم القيود والتسويات.',
+    avatar: avatar2,
+  },
+]
+
+function Stars({ value }) {
+  const { t } = useI18n()
+  const full = Math.max(0, Math.min(5, value))
+  return (
+    <div className="stars" aria-label={t('home.ratingAria', { value: full })}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span key={i} className={i < full ? 'star star--on' : 'star'}>
+          ★
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function TestimonialCard({ name, role, text, rating, avatar }) {
+  return (
+    <article className="testimonial">
+      <div className="testimonial__stars">
+        <Stars value={rating} />
+      </div>
+
+      <p className="testimonial__text">{text}</p>
+
+      <div className="testimonial__footer">
+       
+        <img
+          className="testimonial__avatar"
+          src={avatar}
+          alt=""
+          width="44"
+          height="44"
+          loading="lazy"
+          decoding="async"
+        />
+         <div className="testimonial__who">
+          <p className="testimonial__name">{name}</p>
+          <p className="testimonial__role">{role}</p>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+export default function TestimonialsSection() {
+  const { t, lang, dir } = useI18n()
+  const items =
+    lang === 'en'
+      ? [
+          {
+            name: 'Abdullah Mahmoud',
+            rating: 5,
+            role: 'New manager',
+            text:
+              'The best platform for accounting. Practical content and the certificate added real value to my profile.',
+            avatar: avatar1,
+          },
+          {
+            name: 'Sara Ali',
+            rating: 5,
+            role: 'Accountant',
+            text:
+              'Clear explanations and great examples. I was able to apply what I learned right away.',
+            avatar: avatar2,
+          },
+          {
+            name: 'Mohammed Hassan',
+            rating: 5,
+            role: 'Finance analyst',
+            text:
+              'Excellent structure and support. The course materials are updated and easy to follow.',
+            avatar: avatar3,
+          },
+          {
+            name: 'Reem Alharbi',
+            rating: 5,
+            role: 'Business owner',
+            text:
+              'The courses helped me understand financial reports and improve decision-making for my business.',
+            avatar: avatar1,
+          },
+          {
+            name: 'Ahmed Salem',
+            rating: 5,
+            role: 'Junior auditor',
+            text:
+              'Strong content with useful practice. It really improved my understanding of entries and adjustments.',
+            avatar: avatar2,
+          },
+        ]
+      : TESTIMONIALS
+  return (
+    <section className="section" aria-label={t('home.testimonialsTitle')}>
+      <div className="container">
+        <header className="section__header">
+          <h2 className="section__title">{t('home.testimonialsTitle')}</h2>
+          <p className="section__subtitle">
+            {t('home.testimonialsSub')}
+          </p>
+        </header>
+
+        <div className="swiperShell swiperShell--testimonials">
+          <Swiper
+            modules={[ Pagination, Autoplay]}
+            key={dir}
+            dir={dir}
+            slidesPerView={1.05}
+            spaceBetween={16}
+           
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 4200, disableOnInteraction: false }}
+            breakpoints={{
+              640: { slidesPerView: 1.3, spaceBetween: 16 },
+              768: { slidesPerView: 2, spaceBetween: 18 },
+              1100: { slidesPerView: 3, spaceBetween: 18 },
+            }}
+          >
+            {items.map((item, idx) => (
+              <SwiperSlide key={`${item.name}-${idx}`}>
+                <TestimonialCard {...item} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </div>
+    </section>
+  )
+}
+

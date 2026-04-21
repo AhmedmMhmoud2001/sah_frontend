@@ -1,0 +1,384 @@
+.courseDetailsPage {
+  background: #fff;
+}
+
+.cdHero {
+  padding: 48px 0 26px;
+}
+
+.cdHero__inner {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.cdHero__media {
+  position: relative;
+  min-height: 280px;
+}
+
+.cdHero__frame {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  width: 73%;
+  height: 100%;
+  background: #0b2b4f;
+  border-radius: 18px;
+  transform: translateX(-50px) translateY(-20px);
+  z-index: 1;
+}
+
+/* .cdHero__imgWrap {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-height: 360px;
+  border-radius: 18px;
+  background: #eef1f4;
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.14);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+} */
+
+.cdHero__img {
+  position: relative;   /* مهم */
+  z-index: 1;
+
+  width: 100%;
+  height: 100%;
+  max-height: 324px;
+
+  object-fit: contain;
+
+  border-radius: 14px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.cdHero__title {
+  margin: 0 0 10px;
+  font-size: clamp(22px, 2.8vw, 32px);
+  font-weight: 900;
+  color: rgba(11, 43, 79, 0.95);
+}
+
+.cdHero__subtitle {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.62);
+  line-height: 2;
+  font-size: 14px;
+}
+
+.cdHero__content {
+  text-align: start;
+}
+
+.cdHero__meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  color: rgba(11, 43, 79, 0.72);
+  font-weight: 800;
+  font-size: 13px;
+  flex-wrap: wrap;
+  justify-content: start;
+}
+
+.cdMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cdMeta__iconWrap {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(11, 43, 79, 0.08);
+  flex-shrink: 0;
+}
+
+.cdMeta__icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.cdMeta__svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.cdHero__priceRow {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 14px;
+  justify-items: start;
+}
+
+.cdHero__price {
+  margin: 0;
+  font-weight: 900;
+  color: var(--c-primary);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.cdHero__priceValue {
+  font-size: 40px;
+  letter-spacing: -0.3px;
+}
+
+.cdHero__priceCurrency {
+  font-size: 14px;
+  font-weight: 900;
+  color: rgba(11, 43, 79, 0.72);
+}
+
+.cdHero__buy {
+  width: min(520px, 100%);
+  border: none;
+  border-radius: 10px;
+  background: #0b2b4f;
+  color: #fff;
+  font-weight: 900;
+  padding: 14px 16px;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.14);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.cdHero__note {
+  margin: 10px 0 0;
+  color: rgba(15, 23, 42, 0.52);
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: start;
+}
+
+.cdHero__buy:hover {
+  filter: brightness(1.05);
+}
+
+.cdHero__buy:active {
+  transform: translateY(1px);
+}
+
+.cdCert {
+  padding: 12px 0 18px;
+}
+
+.cdCert__inner {
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  padding: 16px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.cdCert__iconWrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: rgba(214, 160, 66, 0.14);
+  display: grid;
+  place-items: center;
+}
+
+.cdCert__icon {
+  width: 32px;
+  height: 32px;
+}
+
+.cdCert__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(11, 43, 79, 0.95);
+}
+
+.cdCert__text {
+  margin: 8px 0 0;
+  color: rgba(15, 23, 42, 0.62);
+  line-height: 2;
+  font-size: 13px;
+}
+
+.cdCurr {
+  padding: 14px 0 18px;
+}
+
+.cdCurr__panel {
+  border-radius: 10px;
+  background: #0b2b4f;
+  color: #fff;
+  padding: 16px 16px 14px;
+}
+
+.cdCurr__title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.cdCurr__list {
+  display: grid;
+  gap: 10px;
+}
+
+.cdAcc {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  overflow: hidden;
+}
+
+.cdAcc__btn {
+  width: 100%;
+  padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.cdAcc__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cdAcc__dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(214, 160, 66, 0.95);
+  color: #1a1206;
+  font-size: 12px;
+}
+
+.cdAcc__panel {
+  padding: 0 12px 12px;
+}
+
+.cdAcc__text {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.9;
+  font-size: 13px;
+}
+
+.cdAudience {
+  padding: 0 0 22px;
+}
+
+.cdAudience__panel {
+  border-radius: 10px;
+  background: #eef1f4;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 0.55fr 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.cdAudience__illus {
+  border-radius: 10px;
+  min-height: 140px;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(214, 160, 66, 0.35), transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(11, 43, 79, 0.16), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+}
+
+.cdAudience__title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(11, 43, 79, 0.95);
+}
+
+.cdAudience__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  color: rgba(11, 43, 79, 0.82);
+  font-weight: 800;
+}
+
+.cdAudience__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cdAudience__check {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(11, 43, 79, 0.10);
+  color: rgba(11, 43, 79, 0.95);
+  font-weight: 900;
+}
+
+@media (max-width: 980px) {
+  .cdHero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .cdHero__frame {
+    width: 74%;
+    transform: translateX(-12px) translateY(10px);
+  }
+
+  .cdAudience__panel {
+    grid-template-columns: 1fr;
+  }
+  .cdHero__buy {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .cdHero {
+    padding: 34px 0 18px;
+  }
+
+  .cdHero__title {
+    margin: 0 0 8px;
+  }
+
+  .cdHero__subtitle {
+    margin-inline: auto;
+  }
+
+  .cdHero__buy {
+    width: 100%;
+  }
+}
+
