@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
@@ -9,9 +10,49 @@ import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
 import HomeAfterSignIn from './pages/HomeAfterSignIn.jsx'
 
+function getPathname() {
+  return typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '/'
+}
+
 export default function App() {
-  const path =
-    typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '/'
+  const [path, setPath] = useState(getPathname)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    function notify() {
+      setPath(getPathname())
+    }
+
+    const origPush = window.history.pushState
+    const origReplace = window.history.replaceState
+
+    window.history.pushState = function pushStatePatched(...args) {
+      const ret = origPush.apply(this, args)
+      window.dispatchEvent(new Event('locationchange'))
+      return ret
+    }
+    window.history.replaceState = function replaceStatePatched(...args) {
+      const ret = origReplace.apply(this, args)
+      window.dispatchEvent(new Event('locationchange'))
+      return ret
+    }
+
+    window.addEventListener('popstate', notify)
+    window.addEventListener('locationchange', notify)
+
+    return () => {
+      window.removeEventListener('popstate', notify)
+      window.removeEventListener('locationchange', notify)
+      window.history.pushState = origPush
+      window.history.replaceState = origReplace
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+  }, [path])
 
   if (path === '/about' || path === '/about/') return <About />
   if (path === '/courses' || path === '/courses/') return <Courses />
