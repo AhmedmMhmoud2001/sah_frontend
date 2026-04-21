@@ -1,12 +1,25 @@
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Suspense, lazy } from 'react'
+
+const HeroBackground3D = lazy(() => import('./HeroBackground3D.jsx'))
 
 export default function HeroSection() {
   const { t } = useI18n()
+  const reduceMotion = useReducedMotion()
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: reduceMotion ? 0 : 14 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6, ease: 'easeOut', delay },
+  })
   return (
     <section className="hero" aria-label={t('home.heroTitle', { brand: 'Odoo' })}>
+      <Suspense fallback={null}>
+        <HeroBackground3D />
+      </Suspense>
       <div className="container hero__inner">
         <div className="hero__content hero__content--center">
-          <h1 className="hero__accent">
+          <motion.h1 className="hero__accent" {...fadeUp(0.05)}>
             {t('home.heroTitle', {
               brand: `<span class="hero__accent">Odoo</span>`,
             })
@@ -21,23 +34,33 @@ export default function HeroSection() {
                   </span>
                 ),
               )}
-          </h1>
-          <p className="hero__subtitle">
+          </motion.h1>
+          <motion.p className="hero__subtitle" {...fadeUp(0.12)}>
             {t('home.heroSubtitle')}
-          </p>
+          </motion.p>
 
-          <div className="hero__actions hero__actions--center">
-            <a className="btn btn--primary btn--hero" href="#courses">
+          <motion.div className="hero__actions hero__actions--center" {...fadeUp(0.18)}>
+            <motion.a
+              className="btn btn--primary btn--hero"
+              href="#courses"
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={reduceMotion ? undefined : { y: 0 }}
+            >
               {t('home.startLearning')}
-            </a>
+            </motion.a>
 
-            <a className="heroVideo" href="#intro-video">
+            <motion.a
+              className="heroVideo"
+              href="#intro-video"
+              whileHover={reduceMotion ? undefined : { y: -1 }}
+              whileTap={reduceMotion ? undefined : { y: 0 }}
+            >
               <span className="heroVideo__icon" aria-hidden="true">
                 ▶
               </span>
               <span className="heroVideo__text">{t('home.introVideo')}</span>
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
       </div>
     </section>

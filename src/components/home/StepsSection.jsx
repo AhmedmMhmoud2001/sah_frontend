@@ -1,4 +1,5 @@
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { motion, useReducedMotion } from 'framer-motion'
 
 const STEPS = [
   {
@@ -32,6 +33,13 @@ function Step({ number, title, desc }) {
 
 export default function StepsSection() {
   const { t, lang } = useI18n()
+  const reduceMotion = useReducedMotion()
+  const enter = {
+    initial: { opacity: 0, y: reduceMotion ? 0 : 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.6, ease: 'easeOut' },
+  }
   const steps = [
     {
       number: '01',
@@ -61,18 +69,25 @@ export default function StepsSection() {
   return (
     <section className="section" aria-label={t('home.stepsTitle')}>
       <div className="container">
-        <header className="section__header">
+        <motion.header className="section__header" {...enter}>
           <h2 className="section__title">{t('home.stepsTitle')}</h2>
-          <p className="section__subtitle">
-            {t('home.stepsSub')}
-          </p>
-        </header>
+          <p className="section__subtitle">{t('home.stepsSub')}</p>
+        </motion.header>
 
-        <ol className="steps" role="list">
-          {steps.map((s) => (
-            <Step key={s.number} {...s} />
+        <motion.ol className="steps" role="list" {...enter} transition={{ duration: 0.6, ease: 'easeOut', delay: 0.05 }}>
+          {steps.map((s, idx) => (
+            <motion.div
+              key={s.number}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: 0.04 * idx }}
+              style={{ display: 'contents' }}
+            >
+              <Step {...s} />
+            </motion.div>
           ))}
-        </ol>
+        </motion.ol>
       </div>
     </section>
   )

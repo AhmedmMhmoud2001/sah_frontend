@@ -7,6 +7,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import { motion, useReducedMotion } from 'framer-motion'
 
 const TESTIMONIALS = [
   {
@@ -91,6 +92,13 @@ function TestimonialCard({ name, role, text, rating, avatar }) {
 
 export default function TestimonialsSection() {
   const { t, lang, dir } = useI18n()
+  const reduceMotion = useReducedMotion()
+  const enter = {
+    initial: { opacity: 0, y: reduceMotion ? 0 : 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.6, ease: 'easeOut' },
+  }
   const items =
     lang === 'en'
       ? [
@@ -139,14 +147,12 @@ export default function TestimonialsSection() {
   return (
     <section className="section" aria-label={t('home.testimonialsTitle')}>
       <div className="container">
-        <header className="section__header">
+        <motion.header className="section__header" {...enter}>
           <h2 className="section__title">{t('home.testimonialsTitle')}</h2>
-          <p className="section__subtitle">
-            {t('home.testimonialsSub')}
-          </p>
-        </header>
+          <p className="section__subtitle">{t('home.testimonialsSub')}</p>
+        </motion.header>
 
-        <div className="swiperShell swiperShell--testimonials">
+        <motion.div className="swiperShell swiperShell--testimonials" {...enter} transition={{ duration: 0.6, ease: 'easeOut', delay: 0.05 }}>
           <Swiper
             modules={[ Pagination, Autoplay]}
             key={dir}
@@ -168,7 +174,7 @@ export default function TestimonialsSection() {
               </SwiperSlide>
             ))}
           </Swiper>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

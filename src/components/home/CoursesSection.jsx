@@ -7,6 +7,7 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import { motion, useReducedMotion } from 'framer-motion'
 
 const COURSES = [
   {
@@ -152,17 +153,22 @@ function CourseCard({
 
 export default function CoursesSection() {
   const { t, dir } = useI18n()
+  const reduceMotion = useReducedMotion()
+  const enter = {
+    initial: { opacity: 0, y: reduceMotion ? 0 : 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.6, ease: 'easeOut' },
+  }
   return (
     <section className="section" id="courses" aria-label={t('home.featuredCourses')}>
       <div className="container">
-        <header className="section__header">
+        <motion.header className="section__header" {...enter}>
           <h2 className="section__title">{t('home.featuredCourses')}</h2>
-          <p className="section__subtitle">
-            {t('home.featuredCoursesSub')}
-          </p>
-        </header>
+          <p className="section__subtitle">{t('home.featuredCoursesSub')}</p>
+        </motion.header>
 
-        <div className="swiperShell">
+        <motion.div className="swiperShell" {...enter} transition={{ duration: 0.6, ease: 'easeOut', delay: 0.05 }}>
           <Swiper
             modules={[ Pagination, Autoplay]}
             key={dir}
@@ -185,10 +191,15 @@ export default function CoursesSection() {
               </SwiperSlide>
             ))}
           </Swiper>
-        </div>
+        </motion.div>
 
-        <div className="section__footer">
-          <a className="btn btn--allCourses" href="/courses">
+        <motion.div className="section__footer" {...enter} transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}>
+          <motion.a
+            className="btn btn--allCourses"
+            href="/courses"
+            whileHover={reduceMotion ? undefined : { y: -1 }}
+            whileTap={reduceMotion ? undefined : { y: 0 }}
+          >
             <span>{t('home.browseAll')}</span>
             <svg
               className="btn__icon"
@@ -204,8 +215,8 @@ export default function CoursesSection() {
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
-        </div>
+          </motion.a>
+        </motion.div>
       </div>
     </section>
   )

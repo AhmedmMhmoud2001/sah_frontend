@@ -1,12 +1,20 @@
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { motion, useReducedMotion } from 'framer-motion'
 
 export default function CTASection() {
   const { t } = useI18n()
+  const reduceMotion = useReducedMotion()
+  const enter = {
+    initial: { opacity: 0, y: reduceMotion ? 0 : 18 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.25 },
+    transition: { duration: 0.65, ease: 'easeOut' },
+  }
   return (
     <div className="ctaSection__containerdiv">
     <section className="ctaSection" aria-label={t('home.ctaTitle')}>
       <div className="container ctaSection__container">
-        <div className="ctaPanel">
+        <motion.div className="ctaPanel" {...enter}>
           <div className="ctaPanel__decor" aria-hidden="true">
             <span className="ctaPanel__decorWaves" />
             <span className="ctaPanel__decorDots" />
@@ -16,11 +24,16 @@ export default function CTASection() {
             <p className="ctaPanel__subtitle">
               {t('home.ctaSub')}
             </p>
-            <a className="ctaPanel__btn" href="#courses">
+            <motion.a
+              className="ctaPanel__btn"
+              href="#courses"
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={reduceMotion ? undefined : { y: 0 }}
+            >
               {t('home.ctaBtn')}
-            </a>
+            </motion.a>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
     </div>

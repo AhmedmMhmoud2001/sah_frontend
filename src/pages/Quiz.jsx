@@ -4,6 +4,7 @@ import Footer from '../components/layout/Footer.jsx'
 import './home.css'
 import './learn.css'
 import { useI18n } from '../i18n/I18nProvider.jsx'
+import { toastSuccess } from '../ui/toast.js'
 
 import { getCourseById } from '../data/courses.js'
 
@@ -85,6 +86,7 @@ export default function Quiz() {
       },
     }
     saveProgress(route.courseId, next)
+    toastSuccess(t('toast.quizSaved', { score, total: quiz?.questions?.length ?? 0 }))
   }
 
   const backHref =

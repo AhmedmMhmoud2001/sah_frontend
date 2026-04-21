@@ -1,5 +1,9 @@
 export const translations = {
   ar: {
+    toast: {
+      contactSent: 'تم إرسال رسالتك بنجاح',
+      quizSaved: 'تم حفظ نتيجتك: {score} / {total}',
+    },
     nav: {
       language: 'اللغة',
       chooseLanguage: 'اختيار اللغة',
@@ -151,6 +155,10 @@ export const translations = {
     },
   },
   en: {
+    toast: {
+      contactSent: 'Message sent successfully',
+      quizSaved: 'Score saved: {score} / {total}',
+    },
     nav: {
       language: 'Language',
       chooseLanguage: 'Choose language',

@@ -4,9 +4,13 @@ import './home.css'
 import './contact.css'
 import { useI18n } from '../i18n/I18nProvider.jsx'
 import contactIllus from '../assets/img_contact/contact-illus.png'
+import { toastSuccess } from '../ui/toast.js'
 
 export default function Contact() {
   const { dir, lang, t } = useI18n()
+  function onSend() {
+    toastSuccess(t('toast.contactSent'))
+  }
   return (
     <div className="app" dir={dir} lang={lang}>
       <Navbar />
@@ -75,7 +79,7 @@ export default function Contact() {
                   />
                 </div>
 
-                <button className="contactForm__submit" type="button">
+                <button className="contactForm__submit" type="button" onClick={onSend}>
                   {t('contact.send')}
                 </button>
               </form>
