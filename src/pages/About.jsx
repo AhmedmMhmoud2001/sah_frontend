@@ -54,7 +54,7 @@ export default function About() {
             <div className="aboutHero__media" aria-hidden="true">
               <div className="aboutCollage">
                 <img
-                  className=""
+                  className="aboutCollage__img"
                   src={cardHeader}
                   alt=""
                   loading="lazy"
