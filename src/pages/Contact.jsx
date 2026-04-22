@@ -6,6 +6,47 @@ import { useI18n } from '../i18n/I18nProvider.jsx'
 import contactIllus from '../assets/img_contact/contact-illus.png'
 import { toastSuccess } from '../ui/toast.js'
 
+function IconMail() {
+  return (
+    <svg className="contactCard__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M4 6h16v12H4V6Zm0 0 8 6 8-6"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconPhone() {
+  return (
+    <svg className="contactCard__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M8 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+      />
+      <path d="M10 18h4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function IconPin() {
+  return (
+    <svg className="contactCard__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  )
+}
+
 export default function Contact() {
   const { dir, lang, t } = useI18n()
   function onSend() {
@@ -61,6 +102,7 @@ export default function Contact() {
                     id="email"
                     name="email"
                     type="text"
+                    dir="ltr"
                     placeholder={t('contact.emailOrPhonePh')}
                     autoComplete="email"
                   />
@@ -99,30 +141,39 @@ export default function Contact() {
 
             <section className="contactCards" aria-label={t('contact.info')}>
               <article className="contactCard">
-                <div className="contactCard__icon" aria-hidden="true">
-                  ☎
+                <div className="contactCard__iconWrap" aria-hidden="true">
+                  <IconPin />
                 </div>
-                <p className="contactCard__label">{t('contact.phone')}</p>
-                <p className="contactCard__value" dir="ltr">
-                  +966 50 123 4567
-                </p>
+                <div className="contactCard__text">
+                  <p className="contactCard__label">{t('contact.address')}</p>
+                  <p className="contactCard__value">{t('contact.addressValue')}</p>
+                </div>
+              </article>
+              <article className="contactCard">
+                <div className="contactCard__iconWrap" aria-hidden="true">
+                  <IconMail />
+                </div>
+                <div className="contactCard__text">
+                  <p className="contactCard__label">{t('contact.email')}</p>
+                  <p className="contactCard__value" dir="ltr">
+                    info@smahacademy.com
+                  </p>
+                </div>
               </article>
 
+          
               <article className="contactCard">
-                <div className="contactCard__icon" aria-hidden="true">
-                  ✉
+                <div className="contactCard__iconWrap" aria-hidden="true">
+                  <IconPhone />
                 </div>
-                <p className="contactCard__label">{t('contact.email')}</p>
-                <p className="contactCard__value">info@smahacademy.com</p>
+                <div className="contactCard__text">
+                  <p className="contactCard__label">{t('contact.phone')}</p>
+                  <p className="contactCard__value" dir="ltr">
+                    +966 50 123 4567
+                  </p>
+                </div>
               </article>
 
-              <article className="contactCard">
-                <div className="contactCard__icon" aria-hidden="true">
-                  ⌁
-                </div>
-                <p className="contactCard__label">{t('contact.address')}</p>
-                <p className="contactCard__value">{t('contact.addressValue')}</p>
-              </article>
             </section>
           </div>
         </section>

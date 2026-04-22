@@ -1,0 +1,104 @@
+.myCoursesPage {
+  background: #fff;
+}
+
+.myCoursesHero {
+  padding: 56px 0 46px;
+}
+
+.myCoursesHero__header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.myCoursesHero__title {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 38px);
+  font-weight: 900;
+  color: rgba(11, 43, 79, 0.95);
+}
+
+.myCoursesHero__subtitle {
+  margin: 10px auto 0;
+  max-width: 88ch;
+  color: rgba(15, 23, 42, 0.58);
+  line-height: 1.9;
+  font-size: 14px;
+}
+
+.mcCardLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mcCard {
+  height: 100%;
+}
+
+.mcProg {
+  margin-top: 10px;
+}
+
+.mcProg__bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(11, 43, 79, 0.12);
+  overflow: hidden;
+}
+
+.mcProg__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #0b2b4f;
+}
+
+.mcProg__row {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: rgba(15, 23, 42, 0.58);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mcProg__pct {
+  color: rgba(11, 43, 79, 0.92);
+}
+
+.mcDetails {
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(11, 43, 79, 0.82);
+  text-decoration: underline;
+}
+
+.myCoursesEmpty {
+  margin-top: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: #f6f8fb;
+  padding: 22px 18px;
+  text-align: center;
+}
+
+.myCoursesEmpty__title {
+  margin: 0;
+  font-weight: 900;
+  color: rgba(11, 43, 79, 0.95);
+}
+
+.myCoursesEmpty__text {
+  margin: 10px auto 0;
+  max-width: 70ch;
+  color: rgba(15, 23, 42, 0.60);
+  line-height: 1.9;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.myCoursesEmpty .btn {
+  margin-top: 14px;
+}
+

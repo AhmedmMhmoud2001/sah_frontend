@@ -27,8 +27,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
-  max-width: 900px;
-  margin-inline: auto;
+  width: 100%;
 }
 
 .continueCard {
@@ -59,7 +58,7 @@
 .continueCard__body {
   display: grid;
   gap: 8px;
-  text-align: right;
+  text-align: start;
 }
 
 .continueCard__title {

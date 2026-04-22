@@ -63,9 +63,9 @@
   height: 100%;
   display: block;
   border-radius: 16px;
-  background: #fff;
+  /* background: #fff;
   border: 12px solid #eef1f4;
-  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.12); */
   object-fit: cover;
 }
 

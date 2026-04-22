@@ -49,6 +49,16 @@ export const translations = {
       continue: 'أكمل الدورة',
       completed: '{p}% مكتمل',
     },
+    myCourses: {
+      subtitle: 'تابع دوراتك التي بدأت بها وكمّل من حيث توقفت.',
+      emptyTitle: 'لا توجد دورات بعد',
+      emptyText: 'ابدأ من صفحة الدورات ثم ارجع هنا لمتابعة تقدمك.',
+      browse: 'استعرض الدورات',
+      continue: 'أكمل',
+      tapToContinue: 'اضغط للمتابعة',
+      progressPct: '{p}% مكتمل',
+      progressAria: 'نسبة التقدم {p}%',
+    },
     coursesPage: {
       title: 'دوراتنا التدريبية',
       subtitle:
@@ -203,6 +213,16 @@ export const translations = {
       subtitle: 'Start where you left off',
       continue: 'Continue course',
       completed: '{p}% completed',
+    },
+    myCourses: {
+      subtitle: 'Continue the courses you started and pick up where you left off.',
+      emptyTitle: 'No courses yet',
+      emptyText: 'Browse courses to start learning, then come back here to track your progress.',
+      browse: 'Browse courses',
+      continue: 'Continue',
+      tapToContinue: 'Tap to continue',
+      progressPct: '{p}% completed',
+      progressAria: 'Progress {p} percent',
     },
     coursesPage: {
       title: 'Our training courses',

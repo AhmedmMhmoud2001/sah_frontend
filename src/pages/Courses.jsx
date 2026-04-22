@@ -29,46 +29,47 @@ function CourseMeta({ icon, label, value, variant }) {
 function CourseCard({ id, title, duration, students, price, shortDesc, image }) {
   const { t } = useI18n()
   return (
-    <article className="course course--page">
-      <div className="course__header">
-        <img
-          className="course__image"
-          src={image}
-          alt=""
-          width="360"
-          height="210"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-      <div className="course__body">
-        <div className="course__metaRow" aria-label={t('courseDetails.meta')}>
-          <CourseMeta
-            variant="clock"
-            icon={clockIcon}
-            label={t('courseDetails.duration')}
-            value={duration}
-          />
-          <CourseMeta
-            variant="grad"
-            icon={studentsIcon}
-            label={t('courseDetails.students')}
-            value={students}
+    <a className="course--clickable" href={`/course/${id}`} aria-label={title}>
+      <article className="course course--page">
+        <div className="course__header">
+          <img
+            className="course__image"
+            src={image}
+            alt=""
+            width="360"
+            height="210"
+            loading="lazy"
+            decoding="async"
           />
         </div>
-        <h3 className="course__title">{title}</h3>
-        <p className="course__desc">{shortDesc}</p>
-        <div className="course__bottom">
-        <a className="course__detailsBtn" href={`/course/${id}`}>
-            {t('coursesPage.details')}
-        </a>
-        <p className="course__price" aria-label={t('courseDetails.priceAria', { price })}>
-            {price}
-          </p>
-         
+        <div className="course__body">
+          <div className="course__metaRow" aria-label={t('courseDetails.meta')}>
+            <CourseMeta
+              variant="clock"
+              icon={clockIcon}
+              label={t('courseDetails.duration')}
+              value={duration}
+            />
+            <CourseMeta
+              variant="grad"
+              icon={studentsIcon}
+              label={t('courseDetails.students')}
+              value={students}
+            />
+          </div>
+          <h3 className="course__title">{title}</h3>
+          <p className="course__desc">{shortDesc}</p>
+          <div className="course__bottom">
+            <span className="course__detailsBtn" aria-hidden="true">
+              {t('coursesPage.details')}
+            </span>
+            <p className="course__price" aria-label={t('courseDetails.priceAria', { price })}>
+              {price}
+            </p>
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </a>
   )
 }
 

@@ -9,7 +9,7 @@ import { getCourseById } from '../data/courses.js'
 import clockIcon from '../assets/img_home/tabler_clock-filled.png'
 import studentsIcon from '../assets/img_home/mdi_account-student.png'
 import featureCert from '../assets/img_home/Group (1).png'
-
+import audienceImage from '../assets/img_home/Group (1).png'
 function LevelIcon() {
   return (
     <svg className="cdMeta__svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -105,15 +105,18 @@ export default function CourseDetails() {
       <main className="courseDetailsPage">
         <section className="cdHero" aria-label={t('courseDetails.details')}>
           <div className="container cdHero__inner">
+          
+           
             <div className="cdHero__media" aria-hidden="true">
               <div className="cdHero__frame" />
               <div className="cdHero__imgWrap">
                 <img className="cdHero__img" src={course.image} alt="" />
               </div>
             </div>
-
             <div className="cdHero__content">
-              <h1 className="cdHero__title">{lang === 'en' ? course.enTitle ?? course.title : course.title}</h1>
+              <h1 className="cdHero__title">
+                {lang === 'en' ? course.enTitle ?? course.title : course.title}
+              </h1>
               <p className="cdHero__subtitle">
                 {lang === 'en' ? course.enLongDesc ?? course.longDesc : course.longDesc}
               </p>
@@ -125,7 +128,11 @@ export default function CourseDetails() {
                   label={t('courseDetails.students')}
                   value={`${course.students}+`}
                 />
-                <MetaItem icon={<LevelIcon />} label={t('courseDetails.level')} value={levelLabel ?? (lang === 'en' ? 'Beginner' : 'مبتدئ')} />
+                <MetaItem
+                  icon={<LevelIcon />}
+                  label={t('courseDetails.level')}
+                  value={levelLabel ?? (lang === 'en' ? 'Beginner' : 'مبتدئ')}
+                />
               </div>
 
               <div className="cdHero__priceRow">
@@ -133,19 +140,31 @@ export default function CourseDetails() {
                   className="cdHero__price"
                   aria-label={t('courseDetails.priceAria', { price: course.price })}
                 >
-                  <span className="cdHero__priceValue">{course.price.replace(/[^\d]/g, '')}</span>
-                  <span className="cdHero__priceCurrency">{lang === 'en' ? 'SAR' : 'ر.س'}</span>
+                  {lang === 'en' ? (
+                    <>
+                      <span className="cdHero__priceValue">{course.price.replace(/[^\d]/g, '')}</span>
+                      <span className="cdHero__priceCurrency">SAR</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="cdHero__priceCurrency">ر.س</span>
+                      <span className="cdHero__priceValue">{course.price.replace(/[^\d]/g, '')}</span>
+                    </>
+                  )}
                 </p>
-                <button
+               
+               
+              </div>
+              <p className="cdHero__note">{t('courseDetails.oneTime')}</p>
+              <button
                   className="cdHero__buy"
                   type="button"
                   onClick={() => window.location.assign(`/course/${courseId}/learn`)}
                 >
                   {t('courseDetails.buyNow')}
                 </button>
-              </div>
-              <p className="cdHero__note">{t('courseDetails.oneTime')}</p>
             </div>
+
           </div>
         </section>
 
@@ -183,16 +202,19 @@ export default function CourseDetails() {
         <section className="cdAudience" aria-label={t('courseDetails.audienceTitle')}>
           <div className="container">
             <div className="cdAudience__panel">
-              <div className="cdAudience__illus" aria-hidden="true" />
+              <div className="cdAudience__illusWrap" aria-hidden="true">
+                <img className="cdAudience__illusImg" src={audienceImage} alt="" loading="lazy" />
+              </div>
               <div className="cdAudience__content">
                 <h2 className="cdAudience__title">{t('courseDetails.audienceTitle')}</h2>
                 <ul className="cdAudience__list" role="list">
                   {audienceList.map((a) => (
                     <li key={a} className="cdAudience__item">
+                      
+                      <span>{a}</span>
                       <span className="cdAudience__check" aria-hidden="true">
                         ✓
                       </span>
-                      <span>{a}</span>
                     </li>
                   ))}
                 </ul>

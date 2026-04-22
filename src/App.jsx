@@ -9,6 +9,7 @@ import Quiz from './pages/Quiz.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
 import HomeAfterSignIn from './pages/HomeAfterSignIn.jsx'
+import MyCourses from './pages/MyCourses.jsx'
 
 function getPathname() {
   return typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '/'
@@ -65,5 +66,6 @@ export default function App() {
   if (path === '/signup' || path === '/signup/' || path === '/register' || path === '/register/')
     return <SignUp />
   if (path === '/app' || path === '/app/') return <HomeAfterSignIn />
+  if (path === '/my-courses' || path === '/my-courses/') return <MyCourses />
   return <Home />
 }

@@ -1,8 +1,5 @@
 import { useI18n } from '../../i18n/I18nProvider.jsx'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Suspense, lazy } from 'react'
-
-const HeroBackground3D = lazy(() => import('./HeroBackground3D.jsx'))
 
 export default function HeroSection() {
   const { t } = useI18n()
@@ -14,9 +11,6 @@ export default function HeroSection() {
   })
   return (
     <section className="hero" aria-label={t('home.heroTitle', { brand: 'Odoo' })}>
-      <Suspense fallback={null}>
-        <HeroBackground3D />
-      </Suspense>
       <div className="container hero__inner">
         <div className="hero__content hero__content--center">
           <motion.h1 className="hero__accent" {...fadeUp(0.05)}>

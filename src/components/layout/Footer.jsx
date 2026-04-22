@@ -96,7 +96,7 @@ export default function Footer() {
           </p>
         </div>
 
-        <nav className="footer__col" aria-label={t('footer.quickLinks')}>
+        <nav className="footer__col footer__col--quick" aria-label={t('footer.quickLinks')}>
           <h3 className="footer__title">{t('footer.quickLinks')}</h3>
           <ul className="footer__list">
             <li>
@@ -122,7 +122,7 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <nav className="footer__col" aria-label={t('footer.support')}>
+        <nav className="footer__col footer__col--support" aria-label={t('footer.support')}>
           <h3 className="footer__title">{t('footer.support')}</h3>
           <ul className="footer__list">
             <li>
@@ -148,7 +148,7 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <div className="footer__col" id="contact" aria-label={t('footer.contactUs')}>
+        <div className="footer__col footer__col--contact" id="contact" aria-label={t('footer.contactUs')}>
           <h3 className="footer__title">{t('footer.contactUs')}</h3>
           <ul className="footer__list footer__contact">
             <li className="footer__contactRow">

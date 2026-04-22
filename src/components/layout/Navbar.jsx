@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../../i18n/I18nProvider.jsx'
 
 import navLogoHome from '../../assets/img_home/Frame 4.png'
@@ -131,6 +131,28 @@ export default function Navbar({
   const { lang, setLang, t } = useI18n()
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
+  const langWrapRef = useRef(null)
+
+  useEffect(() => {
+    if (!langOpen) return
+    function onDown(e) {
+      if (e.key === 'Escape') setLangOpen(false)
+    }
+    function onDocClick(e) {
+      const el = langWrapRef.current
+      if (!el) return
+      if (!el.contains(e.target)) setLangOpen(false)
+    }
+    window.addEventListener('keydown', onDown)
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('touchstart', onDocClick, { passive: true })
+    return () => {
+      window.removeEventListener('keydown', onDown)
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('touchstart', onDocClick)
+    }
+  }, [langOpen])
 
   const navLinks = useMemo(
     () => [
@@ -178,22 +200,49 @@ export default function Navbar({
               ))}
             </div>
 
-            <label className="nav__lang">
-              <span className="nav__langTrigger" aria-hidden="true">
+            <div className="nav__lang" ref={langWrapRef}>
+              <button
+                type="button"
+                className="navLangBtn"
+                aria-label={t('nav.chooseLanguage')}
+                aria-haspopup="menu"
+                aria-expanded={langOpen}
+                onClick={() => setLangOpen((v) => !v)}
+              >
                 <GlobeIcon />
                 <span className="nav__langText">{t('nav.language')}</span>
                 <ChevronDownIcon />
-              </span>
-              <select
-                className="nav__select nav__select--lang"
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                aria-label={t('nav.chooseLanguage')}
-              >
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-              </select>
-            </label>
+              </button>
+
+              {langOpen ? (
+                <div className="navLangMenu" role="menu" aria-label={t('nav.chooseLanguage')}>
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={lang === 'ar'}
+                    className={lang === 'ar' ? 'navLangMenu__item is-active' : 'navLangMenu__item'}
+                    onClick={() => {
+                      setLang('ar')
+                      setLangOpen(false)
+                    }}
+                  >
+                    العربية
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={lang === 'en'}
+                    className={lang === 'en' ? 'navLangMenu__item is-active' : 'navLangMenu__item'}
+                    onClick={() => {
+                      setLang('en')
+                      setLangOpen(false)
+                    }}
+                  >
+                    English
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -274,7 +323,7 @@ export default function Navbar({
                       </div>
 
                       <div className="navMenu__items">
-                        <a className="navMenu__item" role="menuitem" href="/app">
+                        <a className="navMenu__item" role="menuitem" href="/my-courses">
                           <span className="navMenu__label">{t('nav.myCourses')}</span>
                           <span className="navMenu__icon" aria-hidden="true">
                             📖
