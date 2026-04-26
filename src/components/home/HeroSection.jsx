@@ -1,7 +1,30 @@
 import { useI18n } from '../../i18n/I18nProvider.jsx'
 import { motion, useReducedMotion } from 'framer-motion'
 
-export default function HeroSection() {
+function renderTitleWithBrand(template, brand) {
+  const t = String(template || '')
+  const token = '{brand}'
+  if (!t.includes(token)) return t
+  const parts = t.split(token)
+  return parts.map((p, idx) =>
+    idx === parts.length - 1 ? (
+      p
+    ) : (
+      <span key={idx}>
+        {p}
+        <span className="hero__accent">{brand}</span>
+      </span>
+    ),
+  )
+}
+
+export default function HeroSection({
+  heroTitle,
+  heroBrand,
+  heroSubtitle,
+  heroCtaLabel,
+  heroCtaHref,
+}) {
   const { t } = useI18n()
   const reduceMotion = useReducedMotion()
   const fadeUp = (delay = 0) => ({
@@ -9,38 +32,41 @@ export default function HeroSection() {
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.6, ease: 'easeOut', delay },
   })
+
+  const titleFallback = t('home.heroTitle', {
+    brand: `<span class="hero__accent">${heroBrand || 'Odoo'}</span>`,
+  })
+    .split(`<span class="hero__accent">${heroBrand || 'Odoo'}</span>`)
+    .map((part, idx, arr) =>
+      idx === arr.length - 1 ? (
+        part
+      ) : (
+        <span key={idx}>
+          {part}
+          <span className="hero__accent">{heroBrand || 'Odoo'}</span>
+        </span>
+      ),
+    )
+
   return (
     <section className="hero" aria-label={t('home.heroTitle', { brand: 'Odoo' })}>
       <div className="container hero__inner">
         <div className="hero__content hero__content--center">
           <motion.h1 className="hero__accent" {...fadeUp(0.05)}>
-            {t('home.heroTitle', {
-              brand: `<span class="hero__accent">Odoo</span>`,
-            })
-              .split('<span class="hero__accent">Odoo</span>')
-              .map((part, idx, arr) =>
-                idx === arr.length - 1 ? (
-                  part
-                ) : (
-                  <span key={idx}>
-                    {part}
-                    <span className="hero__accent">Odoo</span>
-                  </span>
-                ),
-              )}
+            {heroTitle ? renderTitleWithBrand(heroTitle, heroBrand || 'Odoo') : titleFallback}
           </motion.h1>
           <motion.p className="hero__subtitle" {...fadeUp(0.12)}>
-            {t('home.heroSubtitle')}
+            {heroSubtitle || t('home.heroSubtitle')}
           </motion.p>
 
           <motion.div className="hero__actions hero__actions--center" {...fadeUp(0.18)}>
             <motion.a
               className="btn btn--primary btn--hero"
-              href="#courses"
+              href={heroCtaHref || '#courses'}
               whileHover={reduceMotion ? undefined : { y: -2 }}
               whileTap={reduceMotion ? undefined : { y: 0 }}
             >
-              {t('home.startLearning')}
+              {heroCtaLabel || t('home.startLearning')}
             </motion.a>
 
             <motion.a

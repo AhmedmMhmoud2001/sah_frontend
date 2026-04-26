@@ -3,6 +3,7 @@ import groupAltImg from '../../assets/img_home/Group (1).png'
 import objectImg from '../../assets/img_home/Object.png'
 import objectAltImg from '../../assets/img_home/Object (1).png'
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { resolveAssetUrl } from '../../api/index.js'
 
 const FEATURES_AR = [
   {
@@ -67,14 +68,21 @@ function FeatureCard({ icon, title, desc }) {
   )
 }
 
-export default function FeaturesSection() {
+export default function FeaturesSection({ items }) {
   const { lang } = useI18n()
-  const items = lang === 'en' ? FEATURES_EN : FEATURES_AR
+  const fallback = lang === 'en' ? FEATURES_EN : FEATURES_AR
+  const list = Array.isArray(items) && items.length
+    ? items.map((it, idx) => ({
+        title: it?.title || '',
+        desc: it?.desc || '',
+        icon: it?.iconUrl ? resolveAssetUrl(it.iconUrl) : fallback[idx % fallback.length]?.icon,
+      })).filter((x) => x.title || x.desc)
+    : fallback
   return (
     <section className="section" aria-label={lang === 'en' ? 'Features' : 'المميزات'}>
       <div className="container">
         <ul className="featuresGrid" role="list">
-          {items.map((f) => (
+          {list.map((f) => (
             <FeatureCard key={f.title} {...f} />
           ))}
         </ul>

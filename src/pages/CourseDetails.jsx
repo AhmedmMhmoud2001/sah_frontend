@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Navbar from '../components/layout/Navbar.jsx'
 import Footer from '../components/layout/Footer.jsx'
 import './home.css'
 import './course-details.css'
 import { useI18n } from '../i18n/I18nProvider.jsx'
 
-import { getCourseById } from '../data/courses.js'
+import { getCourse, getEnrollments, resolveAssetUrl } from '../api/index.js'
 import clockIcon from '../assets/img_home/tabler_clock-filled.png'
 import studentsIcon from '../assets/img_home/mdi_account-student.png'
 import featureCert from '../assets/img_home/Group (1).png'
@@ -80,9 +80,71 @@ function AccordionItem({ title, index, open, onToggle }) {
 
 export default function CourseDetails() {
   const courseId = useCourseIdFromUrl()
-  const course = useMemo(() => getCourseById(courseId), [courseId])
+  const [course, setCourse] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [openIdx, setOpenIdx] = useState(0)
+  const [enrolling, setEnrolling] = useState(false)
+  const [isEnrolled, setIsEnrolled] = useState(false)
   const { dir, lang, t } = useI18n()
+
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    ;(async () => {
+      try {
+        const data = await getCourse(courseId, { lang })
+        if (!mounted) return
+        setCourse(data)
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [courseId, lang])
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const token = (() => {
+          try {
+            return localStorage.getItem('token')
+          } catch {
+            return null
+          }
+        })()
+        if (!token) {
+          if (!cancelled) setIsEnrolled(false)
+          return
+        }
+        const res = await getEnrollments({ lang })
+        const items = Array.isArray(res?.enrollments) ? res.enrollments : []
+        const enrolled = items.some((e) => e?.course?.id === courseId || e?.courseId === courseId)
+        if (!cancelled) setIsEnrolled(enrolled)
+      } catch {
+        if (!cancelled) setIsEnrolled(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [courseId, lang])
+
+  if (loading || !course) {
+    return (
+      <div className="app" dir={dir} lang={lang}>
+        <Navbar />
+        <main className="courseDetailsPage">
+          <div className="container" style={{ padding: 24 }}>
+            <p>{t('msg.loading')}</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
   const levelLabel =
     lang === 'en'
       ? course.level === 'مبتدئ'
@@ -94,9 +156,14 @@ export default function CourseDetails() {
             : course.level
       : course.level
 
-  const curriculumList =
-    lang === 'en' ? course.enCurriculum ?? course.curriculum : course.curriculum
-  const audienceList = lang === 'en' ? course.enAudience ?? course.audience : course.audience
+  const curriculumListRaw = lang === 'en' ? course.enCurriculum ?? course.curriculum : course.curriculum
+  const audienceListRaw = lang === 'en' ? course.enAudience ?? course.audience : course.audience
+  const curriculumList = Array.isArray(curriculumListRaw) ? curriculumListRaw : []
+  const audienceList = Array.isArray(audienceListRaw) ? audienceListRaw : []
+  const priceValue =
+    typeof course.price === 'number'
+      ? String(course.price)
+      : String(course.price || '').replace(/[^\d]/g, '') || '0'
 
   return (
     <div className="app" dir={dir} lang={lang}>
@@ -110,7 +177,7 @@ export default function CourseDetails() {
             <div className="cdHero__media" aria-hidden="true">
               <div className="cdHero__frame" />
               <div className="cdHero__imgWrap">
-                <img className="cdHero__img" src={course.image} alt="" />
+                <img className="cdHero__img" src={resolveAssetUrl(course.image)} alt="" />
               </div>
             </div>
             <div className="cdHero__content">
@@ -142,13 +209,13 @@ export default function CourseDetails() {
                 >
                   {lang === 'en' ? (
                     <>
-                      <span className="cdHero__priceValue">{course.price.replace(/[^\d]/g, '')}</span>
+                      <span className="cdHero__priceValue">{priceValue}</span>
                       <span className="cdHero__priceCurrency">SAR</span>
                     </>
                   ) : (
                     <>
                       <span className="cdHero__priceCurrency">ر.س</span>
-                      <span className="cdHero__priceValue">{course.price.replace(/[^\d]/g, '')}</span>
+                      <span className="cdHero__priceValue">{priceValue}</span>
                     </>
                   )}
                 </p>
@@ -156,13 +223,34 @@ export default function CourseDetails() {
                
               </div>
               <p className="cdHero__note">{t('courseDetails.oneTime')}</p>
-              <button
+              {isEnrolled ? (
+                <a className="cdHero__buy" href={`/course/${encodeURIComponent(courseId)}/learn`}>
+                  {t('learn.start') || (lang === 'en' ? 'Start learning' : 'ابدأ التعلم')}
+                </a>
+              ) : (
+                <button
                   className="cdHero__buy"
                   type="button"
-                  onClick={() => window.location.assign(`/course/${courseId}/learn`)}
+                  disabled={enrolling}
+                  onClick={async () => {
+                    if (enrolling) return
+                    const token = (() => {
+                      try {
+                        return localStorage.getItem('token')
+                      } catch {
+                        return null
+                      }
+                    })()
+                    if (!token) {
+                      window.location.assign('/login')
+                      return
+                    }
+                    window.location.assign(`/checkout?courseId=${encodeURIComponent(courseId)}`)
+                  }}
                 >
                   {t('courseDetails.buyNow')}
                 </button>
+              )}
             </div>
 
           </div>

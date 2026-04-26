@@ -23,6 +23,28 @@
   line-height: 1.8;
 }
 
+.continueSection__allBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(11, 43, 79, 0.16);
+  background: rgba(11, 43, 79, 0.06);
+  color: rgba(11, 43, 79, 0.95);
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 13px;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.continueSection__allBtn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(11, 43, 79, 0.28);
+  background: rgba(11, 43, 79, 0.09);
+}
+
 .continueGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -32,20 +54,21 @@
 
 .continueCard {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 14px;
+  grid-template-columns: 1fr 148px;
+  gap: 16px;
   align-items: center;
-  padding: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 14px;
+  padding: 18px 18px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  border-radius: 16px;
   background: #fff;
-  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.08);
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.08);
 }
 
 .continueCard__thumbWrap {
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   aspect-ratio: 4 / 3;
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .continueCard__thumb {
@@ -55,23 +78,32 @@
   display: block;
 }
 
-.continueCard__body {
+.continueCard__content {
   display: grid;
-  gap: 8px;
-  text-align: start;
+  gap: 10px;
+  text-align: center;
+  align-content: center;
 }
 
 .continueCard__title {
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 900;
   color: rgba(11, 43, 79, 0.95);
+  letter-spacing: 0.2px;
+}
+
+.continueCard__progressRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
 }
 
 .continueCard__progressBar {
-  height: 10px;
+  height: 12px;
   border-radius: 999px;
-  background: rgba(11, 43, 79, 0.12);
+  background: rgba(11, 43, 79, 0.14);
   overflow: hidden;
 }
 
@@ -87,13 +119,14 @@
   font-size: 12px;
   font-weight: 800;
   color: rgba(15, 23, 42, 0.55);
+  white-space: nowrap;
 }
 
 .continueCard__btn {
-  justify-self: start;
-  margin-top: 4px;
-  padding: 10px 16px;
-  border-radius: 8px;
+  justify-self: center;
+  margin-top: 2px;
+  padding: 10px 18px;
+  border-radius: 10px;
   background: #0b2b4f;
   color: #fff;
   text-decoration: none;
@@ -106,6 +139,6 @@
     grid-template-columns: 1fr;
   }
   .continueCard {
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: 1fr 132px;
   }
 }

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { getContactInfoCached } from '../../api/contactCache.js'
+import { logout as apiLogout } from '../../api/index.js'
 
 import navLogoHome from '../../assets/img_home/Frame 4.png'
 import navLogoDefault from '../../assets/img_home/Frame 5.png'
@@ -122,7 +124,7 @@ function SocialFacebook() {
 }
 
 export default function Navbar({
-  authenticated = false,
+  authenticated,
   homePath = '/',
   topBarTransparent = false,
   /** When true (marketing home `/`), use Frame 4.png; otherwise Frame 5.png */
@@ -133,6 +135,69 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const langWrapRef = useRef(null)
+  const [contact, setContact] = useState(null)
+  const [auth, setAuth] = useState({ token: null, user: null })
+
+  function readAuth() {
+    try {
+      const token = localStorage.getItem('token')
+      const userRaw = localStorage.getItem('user')
+      const user = userRaw ? JSON.parse(userRaw) : null
+      return { token, user }
+    } catch {
+      return { token: null, user: null }
+    }
+  }
+
+  useEffect(() => {
+    setAuth(readAuth())
+    function onStorage(e) {
+      if (!e) return
+      if (e.key === 'token' || e.key === 'user') {
+        setAuth(readAuth())
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    window.addEventListener('focus', () => setAuth(readAuth()))
+    return () => {
+      window.removeEventListener('storage', onStorage)
+      window.removeEventListener('focus', () => setAuth(readAuth()))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const isAuthed = authenticated !== undefined ? authenticated : !!auth.token
+  const userName = auth.user?.name || 'User'
+  const userEmail = auth.user?.email || ''
+  const initials = String(userName || 'U')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase?.() || '')
+    .join('') || 'U'
+
+  function handleLogout(e) {
+    e?.preventDefault?.()
+    apiLogout()
+    setMenuOpen(false)
+    setAuth({ token: null, user: null })
+    if (typeof window !== 'undefined') window.location.assign('/')
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const data = await getContactInfoCached()
+        if (!cancelled) setContact(data || {})
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!langOpen) return
@@ -186,9 +251,13 @@ export default function Navbar({
         }
       >
         <div className="container nav__topInner">
-          <a className="nav__phone" href="tel:+221234567890" aria-label={t('nav.phone')}>
+          <a
+            className="nav__phone"
+            href={contact?.phone ? `tel:${contact.phone}` : 'tel:+221234567890'}
+            aria-label={t('nav.phone')}
+          >
             <PhoneIcon />
-            <span dir="ltr">(+22) 123 456 7890</span>
+            <span dir="ltr">{contact?.phone || '(+22) 123 456 7890'}</span>
           </a>
 
           <div className="nav__topExtras">
@@ -284,14 +353,14 @@ export default function Navbar({
         </nav>
 
         <div className="nav__actions">
-          {authenticated ? (
+          {isAuthed ? (
             <>
-              <button type="button" className="nav__bell" aria-label={t('nav.notifications')}>
+              <a className="nav__bell" href="/notifications" aria-label={t('nav.notifications')}>
                 <span className="nav__bellGlyph" aria-hidden="true">
                   🔔
                 </span>
                 <span className="nav__bellBadge" aria-hidden="true" />
-              </button>
+              </a>
               <div className="nav__menuWrap">
                 <button
                   type="button"
@@ -300,7 +369,7 @@ export default function Navbar({
                   aria-expanded={menuOpen}
                   onClick={() => setMenuOpen((v) => !v)}
                 >
-                  RE
+                  {initials}
                 </button>
 
                 {menuOpen ? (
@@ -314,11 +383,11 @@ export default function Navbar({
                     <div className="navMenu" role="menu" aria-label={t('nav.accountMenu')}>
                       <div className="navMenu__header">
                         <div className="navMenu__user">
-                          <p className="navMenu__name">Rana Essawi</p>
-                          <p className="navMenu__email">Ranaessawi@gmail.com</p>
+                          <p className="navMenu__name">{userName}</p>
+                          {userEmail ? <p className="navMenu__email">{userEmail}</p> : null}
                         </div>
                         <div className="navMenu__avatar" aria-hidden="true">
-                          RE
+                          {initials}
                         </div>
                       </div>
 
@@ -345,7 +414,7 @@ export default function Navbar({
                         className="navMenu__logout"
                         role="menuitem"
                         href="/"
-                        onClick={() => setMenuOpen(false)}
+                        onClick={handleLogout}
                       >
                         {t('nav.logout')}
                         <span className="navMenu__logoutIcon" aria-hidden="true">
@@ -386,20 +455,16 @@ export default function Navbar({
               ))}
             </nav>
             <div className="nav__mobileActions">
-              {authenticated ? (
+              {isAuthed ? (
                 <div className="nav__mobileAuth">
-                  <button
-                    type="button"
-                    className="nav__bell nav__bell--full"
-                    aria-label={t('nav.notifications')}
-                  >
+                  <a className="nav__bell nav__bell--full" href="/notifications" aria-label={t('nav.notifications')}>
                     <span className="nav__bellGlyph" aria-hidden="true">
                       🔔
                     </span>
                     <span className="nav__bellBadge" aria-hidden="true" />
-                  </button>
+                  </a>
                   <a className="nav__avatar nav__avatar--full" href="/app">
-                    RE
+                    {initials}
                   </a>
                 </div>
               ) : (

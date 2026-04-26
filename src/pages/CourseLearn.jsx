@@ -5,7 +5,8 @@ import './home.css'
 import './learn.css'
 import { useI18n } from '../i18n/I18nProvider.jsx'
 
-import { getCourseById } from '../data/courses.js'
+import { getCourse, getLessons, getProgress, markLessonComplete, logout } from '../api/index.js'
+import { getEnrollments } from '../api/index.js'
 
 function useCourseIdFromUrl() {
   const pathname =
@@ -16,27 +17,12 @@ function useCourseIdFromUrl() {
   return 'c1'
 }
 
-function progressKey(courseId) {
-  return `sah_progress_${courseId}`
-}
-
-function loadProgress(courseId) {
-  try {
-    const raw = localStorage.getItem(progressKey(courseId))
-    if (!raw) return { completed: {}, lastLessonId: null, quizScores: {} }
-    const parsed = JSON.parse(raw)
-    return {
-      completed: parsed?.completed ?? {},
-      lastLessonId: parsed?.lastLessonId ?? null,
-      quizScores: parsed?.quizScores ?? {},
-    }
-  } catch {
-    return { completed: {}, lastLessonId: null, quizScores: {} }
+function toProgressShape(api) {
+  return {
+    completed: api?.completedLessons ?? {},
+    lastLessonId: api?.lastLessonId ?? null,
+    quizScores: api?.quizScores ?? {},
   }
-}
-
-function saveProgress(courseId, progress) {
-  localStorage.setItem(progressKey(courseId), JSON.stringify(progress))
 }
 
 function YouTubeFrame({ url, title }) {
@@ -55,46 +41,111 @@ function YouTubeFrame({ url, title }) {
 export default function CourseLearn() {
   const { dir, lang, t } = useI18n()
   const courseId = useCourseIdFromUrl()
-  const course = useMemo(() => getCourseById(courseId), [courseId])
-  const lessons = course.lessons ?? []
-  const courseTitle = lang === 'en' ? course.enTitle ?? course.title : course.title
-
-  const [progress, setProgress] = useState(() => loadProgress(courseId))
-  const [activeLessonId, setActiveLessonId] = useState(() => {
-    const p = loadProgress(courseId)
-    return p.lastLessonId ?? lessons[0]?.id ?? null
-  })
+  const [course, setCourse] = useState(null)
+  const [lessons, setLessons] = useState([])
+  const [finalQuiz, setFinalQuiz] = useState(null)
+  const [accessChecked, setAccessChecked] = useState(false)
 
   useEffect(() => {
-    const p = loadProgress(courseId)
-    setProgress(p)
-    setActiveLessonId(p.lastLessonId ?? lessons[0]?.id ?? null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let mounted = true
+    ;(async () => {
+      try {
+        // Require enrollment with paid order (or manual enrollment without orderId).
+        try {
+          const token = localStorage.getItem('token')
+          if (!token) {
+            window.location.assign(`/course/${courseId}`)
+            return
+          }
+          const enr = await getEnrollments({ lang })
+          const items = Array.isArray(enr?.enrollments) ? enr.enrollments : []
+          const row = items.find((e) => e?.courseId === courseId || e?.course?.id === courseId)
+          const ok = !!row && (!row.orderId || row.orderStatus === 'paid')
+          if (!ok) {
+            window.location.assign(`/checkout?courseId=${encodeURIComponent(courseId)}`)
+            return
+          }
+        } finally {
+          if (mounted) setAccessChecked(true)
+        }
+
+        const [c, l] = await Promise.all([
+          getCourse(courseId, { lang }),
+          getLessons(courseId, { lang }),
+        ])
+        if (!mounted) return
+        setCourse(c)
+        setLessons(l.lessons || [])
+        setFinalQuiz(l.finalQuiz || null)
+      } catch {
+        if (!mounted) return
+        setCourse(null)
+        setLessons([])
+        setFinalQuiz(null)
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [courseId, lang])
+
+  const courseTitle = lang === 'en' ? course?.enTitle ?? course?.title : course?.title
+
+  const [progress, setProgress] = useState(() => toProgressShape(null))
+  const [activeLessonId, setActiveLessonId] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const p = await getProgress(courseId)
+        if (cancelled) return
+        const next = toProgressShape(p)
+        setProgress(next)
+        setActiveLessonId(next.lastLessonId ?? null)
+      } catch (e) {
+        if (cancelled) return
+        if (e?.status === 401) {
+          logout()
+          if (typeof window !== 'undefined') window.location.assign('/login')
+          return
+        }
+        setProgress(toProgressShape(null))
+        setActiveLessonId(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
   }, [courseId])
+
+  useEffect(() => {
+    if (!lessons.length) return
+    setActiveLessonId((prev) => prev ?? lessons[0]?.id ?? null)
+  }, [lessons])
 
   const activeLesson = useMemo(
     () => lessons.find((l) => l.id === activeLessonId) ?? lessons[0],
     [lessons, activeLessonId],
   )
 
-  function setCompleted(lessonId, value) {
-    setProgress((prev) => {
-      const next = {
-        ...prev,
-        completed: { ...(prev.completed ?? {}), [lessonId]: value },
+  async function setCompleted(lessonId, value) {
+    try {
+      const updated = await markLessonComplete(courseId, lessonId, value)
+      const next = toProgressShape(updated)
+      setProgress(next)
+      setActiveLessonId(next.lastLessonId ?? lessonId)
+    } catch (e) {
+      console.error(e)
+      if (e?.status === 401) {
+        logout()
+        if (typeof window !== 'undefined') window.location.assign('/login')
       }
-      saveProgress(courseId, next)
-      return next
-    })
+    }
   }
 
   function setActive(lessonId) {
     setActiveLessonId(lessonId)
-    setProgress((prev) => {
-      const next = { ...prev, lastLessonId: lessonId }
-      saveProgress(courseId, next)
-      return next
-    })
   }
 
   const completedCount = lessons.filter((l) => progress.completed?.[l.id]).length
@@ -104,6 +155,16 @@ export default function CourseLearn() {
       <Navbar />
 
       <main className="learnPage">
+        {!accessChecked ? (
+          <div className="container" style={{ padding: 24 }}>
+            <p>{t('msg.loading')}</p>
+          </div>
+        ) : null}
+        {!course ? (
+          <div className="container" style={{ padding: 24 }}>
+            <p>{t('msg.loading')}</p>
+          </div>
+        ) : null}
         <section className="learnHero" aria-label={t('learn.player')}>
           <div className="container learnHero__inner">
             <header className="learnHero__header">
@@ -133,7 +194,7 @@ export default function CourseLearn() {
                     {activeLesson?.quiz ? (
                       <a
                         className="learnBtn learnBtn--ghost"
-                        href={`/course/${courseId}/quiz/${activeLesson.id}`}
+                        href={`/course/${courseId}/quiz/${activeLesson.quiz.id}`}
                       >
                         {t('learn.quiz')}
                       </a>
@@ -155,7 +216,14 @@ export default function CourseLearn() {
               <aside className="learnList" aria-label={t('learn.videosList')}>
                 <div className="learnList__header">
                   <h2 className="learnList__title">{t('learn.videos')}</h2>
-                  <a className="learnBtn learnBtn--primary" href={`/course/${courseId}/final-quiz`}>
+                  <a
+                    className="learnBtn learnBtn--primary"
+                    href={
+                      finalQuiz?.id
+                        ? `/course/${courseId}/final-quiz/${finalQuiz.id}`
+                        : `/course/${courseId}/final-quiz`
+                    }
+                  >
                     {t('learn.finalQuiz')}
                   </a>
                 </div>
@@ -186,7 +254,7 @@ export default function CourseLearn() {
                               {l.quiz ? (
                                 <a
                                   className="learnItem__quiz"
-                                  href={`/course/${courseId}/quiz/${l.id}`}
+                                  href={`/course/${courseId}/quiz/${l.quiz.id}`}
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {t('learn.quiz')}

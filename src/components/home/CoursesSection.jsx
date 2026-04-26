@@ -8,6 +8,8 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useMemo, useState } from 'react'
+import { getCourses, resolveAssetUrl } from '../../api/index.js'
 
 const COURSES = [
   {
@@ -97,22 +99,26 @@ function CourseMeta({ icon, label, value, variant }) {
   )
 }
 
+function formatPrice(price, lang) {
+  const n = typeof price === 'number' ? price : Number(price)
+  if (!Number.isFinite(n)) return lang === 'en' ? '—' : '—'
+  if (lang === 'en') return `${n} SAR`
+  return `${n} ر.س`
+}
+
 function CourseCard({
   id,
   title,
-  enTitle,
-  price,
-  desc,
-  enDesc,
   image,
-  metaLeft,
-  metaRight,
+  duration,
+  students,
+  price,
+  shortDesc,
 }) {
   const { t, lang } = useI18n()
-  const shownTitle = lang === 'en' ? enTitle ?? title : title
-  const shownDesc = lang === 'en' ? enDesc ?? desc : desc
+  const shownPrice = formatPrice(price, lang)
   return (
-    <a className="course course--clickable" href={`/course/${id}`} aria-label={shownTitle}>
+    <a className="course course--clickable" href={`/course/${id}`} aria-label={title}>
       <div className="course__header">
         <img
           className="course__image"
@@ -130,20 +136,20 @@ function CourseCard({
             variant="clock"
             icon={clockIcon}
             label={t('courseDetails.duration')}
-            value={metaLeft}
+            value={duration}
           />
           <CourseMeta
             variant="grad"
             icon={studentsIcon}
             label={t('courseDetails.students')}
-            value={metaRight}
+            value={students}
           />
         </div>
-        <h3 className="course__title">{shownTitle}</h3>
-        <p className="course__desc">{shownDesc}</p>
+        <h3 className="course__title">{title}</h3>
+        <p className="course__desc">{shortDesc}</p>
         <div className="course__bottom">
-          <p className="course__price" aria-label={t('courseDetails.priceAria', { price })}>
-            {price}
+          <p className="course__price" aria-label={t('courseDetails.priceAria', { price: shownPrice })}>
+            {shownPrice}
           </p>
         </div>
       </div>
@@ -152,14 +158,53 @@ function CourseCard({
 }
 
 export default function CoursesSection() {
-  const { t, dir } = useI18n()
+  const { t, dir, lang } = useI18n()
   const reduceMotion = useReducedMotion()
+  const [items, setItems] = useState([])
   const enter = {
     initial: { opacity: 0, y: reduceMotion ? 0 : 16 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, amount: 0.2 },
     transition: { duration: 0.6, ease: 'easeOut' },
   }
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const featuredData = await getCourses({ lang, page: 1, limit: 6, featured: true })
+        const featuredList = Array.isArray(featuredData?.courses) ? featuredData.courses : []
+        if (featuredList.length) {
+          if (!cancelled) setItems(featuredList)
+          return
+        }
+        const data = await getCourses({ lang, page: 1, limit: 6 })
+        const list = Array.isArray(data?.courses) ? data.courses : []
+        if (!cancelled) setItems(list)
+      } catch (e) {
+        console.error(e)
+        if (!cancelled) setItems([])
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [lang])
+
+  const slides = useMemo(() => {
+    if (items.length) return items
+    // fallback to static demo cards if API is unavailable
+    return COURSES.map((c) => ({
+      id: c.id,
+      title: lang === 'en' ? c.enTitle : c.title,
+      shortDesc: lang === 'en' ? c.enDesc : c.desc,
+      duration: c.metaLeft,
+      students: c.metaRight,
+      price: c.price,
+      image: c.image,
+    }))
+  }, [items, lang])
+
   return (
     <section className="section" id="courses" aria-label={t('home.featuredCourses')}>
       <div className="container">
@@ -185,9 +230,17 @@ export default function CoursesSection() {
               1200: { slidesPerView: 4, spaceBetween: 18 },
             }}
           >
-            {COURSES.map((c) => (
+            {slides.map((c) => (
               <SwiperSlide key={c.id}>
-                <CourseCard {...c} />
+                <CourseCard
+                  id={c.id}
+                  title={c.title}
+                  shortDesc={c.shortDesc}
+                  duration={c.duration || ''}
+                  students={c.students || ''}
+                  price={c.price}
+                  image={resolveAssetUrl(c.image) || cardHeaderImg}
+                />
               </SwiperSlide>
             ))}
           </Swiper>

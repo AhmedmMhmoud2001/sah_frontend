@@ -5,6 +5,8 @@ import './contact.css'
 import { useI18n } from '../i18n/I18nProvider.jsx'
 import contactIllus from '../assets/img_contact/contact-illus.png'
 import { toastSuccess } from '../ui/toast.js'
+import { useEffect, useMemo, useState } from 'react'
+import { getPublicContactInfo, submitContactMessage } from '../api/index.js'
 
 function IconMail() {
   return (
@@ -49,9 +51,64 @@ function IconPin() {
 
 export default function Contact() {
   const { dir, lang, t } = useI18n()
-  function onSend() {
-    toastSuccess(t('toast.contactSent'))
+  const [info, setInfo] = useState(null)
+  const [loadingInfo, setLoadingInfo] = useState(true)
+  const [sending, setSending] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      setLoadingInfo(true)
+      try {
+        const data = await getPublicContactInfo()
+        if (!cancelled) setInfo(data || {})
+      } catch (e) {
+        console.error(e)
+        if (!cancelled) setInfo(null)
+      } finally {
+        if (!cancelled) setLoadingInfo(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const addressValue = useMemo(() => {
+    return info?.address || t('contact.addressValue')
+  }, [info?.address, t])
+
+  const emailValue = useMemo(() => {
+    return info?.email || 'info@smahacademy.com'
+  }, [info?.email])
+
+  const phoneValue = useMemo(() => {
+    return info?.phone || '+966 50 123 4567'
+  }, [info?.phone])
+
+  async function onSend(e) {
+    e.preventDefault()
+    if (sending) return
+    setSending(true)
+    try {
+      await submitContactMessage({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        subject: '',
+        message: form.message.trim(),
+      })
+      toastSuccess(t('toast.contactSent'))
+      setForm({ name: '', email: '', message: '' })
+    } catch (err) {
+      console.error(err)
+      alert(lang === 'en' ? 'Failed to send message' : 'فشل إرسال الرسالة')
+    } finally {
+      setSending(false)
+    }
   }
+
   return (
     <div className="app" dir={dir} lang={lang}>
       <Navbar />
@@ -78,7 +135,7 @@ export default function Contact() {
                   />
                 </div>
               </aside>
-              <form className="contactForm" aria-label={t('contact.form')}>
+              <form className="contactForm" aria-label={t('contact.form')} onSubmit={onSend}>
                 <div className="contactForm__field">
                   <label className="contactForm__label" htmlFor="fullName">
                     {t('contact.fullName')}
@@ -90,6 +147,8 @@ export default function Contact() {
                     type="text"
                     placeholder={t('contact.fullNamePh')}
                     autoComplete="name"
+                    value={form.name}
+                    onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                   />
                 </div>
 
@@ -105,6 +164,8 @@ export default function Contact() {
                     dir="ltr"
                     placeholder={t('contact.emailOrPhonePh')}
                     autoComplete="email"
+                    value={form.email}
+                    onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
                   />
                 </div>
 
@@ -118,11 +179,13 @@ export default function Contact() {
                     name="message"
                     placeholder={t('contact.messagePh')}
                     rows={7}
+                    value={form.message}
+                    onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
                   />
                 </div>
 
-                <button className="contactForm__submit" type="button" onClick={onSend}>
-                  {t('contact.send')}
+                <button className="contactForm__submit" type="submit" disabled={sending}>
+                  {sending ? (lang === 'en' ? 'Sending...' : 'جاري الإرسال...') : t('contact.send')}
                 </button>
               </form>
 
@@ -146,7 +209,9 @@ export default function Contact() {
                 </div>
                 <div className="contactCard__text">
                   <p className="contactCard__label">{t('contact.address')}</p>
-                  <p className="contactCard__value">{t('contact.addressValue')}</p>
+                  <p className="contactCard__value">
+                    {loadingInfo ? (lang === 'en' ? 'Loading...' : 'جاري التحميل...') : addressValue}
+                  </p>
                 </div>
               </article>
               <article className="contactCard">
@@ -156,7 +221,7 @@ export default function Contact() {
                 <div className="contactCard__text">
                   <p className="contactCard__label">{t('contact.email')}</p>
                   <p className="contactCard__value" dir="ltr">
-                    info@smahacademy.com
+                    {loadingInfo ? '...' : emailValue}
                   </p>
                 </div>
               </article>
@@ -169,7 +234,7 @@ export default function Contact() {
                 <div className="contactCard__text">
                   <p className="contactCard__label">{t('contact.phone')}</p>
                   <p className="contactCard__value" dir="ltr">
-                    +966 50 123 4567
+                    {loadingInfo ? '...' : phoneValue}
                   </p>
                 </div>
               </article>

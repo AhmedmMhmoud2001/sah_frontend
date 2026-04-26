@@ -31,7 +31,7 @@ function Step({ number, title, desc }) {
   )
 }
 
-export default function StepsSection() {
+export default function StepsSection({ steps }) {
   const { t, lang } = useI18n()
   const reduceMotion = useReducedMotion()
   const enter = {
@@ -40,7 +40,7 @@ export default function StepsSection() {
     viewport: { once: true, amount: 0.2 },
     transition: { duration: 0.6, ease: 'easeOut' },
   }
-  const steps = [
+  const fallback = [
     {
       number: '01',
       title: lang === 'en' ? 'Choose a course' : 'اختر الدورة',
@@ -66,6 +66,7 @@ export default function StepsSection() {
           : 'أكمل التقييم لتحصل على شهادة إتمام معتمدة.',
     },
   ]
+  const list = Array.isArray(steps) && steps.length ? steps : fallback
   return (
     <section className="section" aria-label={t('home.stepsTitle')}>
       <div className="container">
@@ -75,7 +76,7 @@ export default function StepsSection() {
         </motion.header>
 
         <motion.ol className="steps" role="list" {...enter} transition={{ duration: 0.6, ease: 'easeOut', delay: 0.05 }}>
-          {steps.map((s, idx) => (
+          {list.map((s, idx) => (
             <motion.div
               key={s.number}
               initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}

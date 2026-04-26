@@ -8,8 +8,11 @@ import CourseLearn from './pages/CourseLearn.jsx'
 import Quiz from './pages/Quiz.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
-import HomeAfterSignIn from './pages/HomeAfterSignIn.jsx'
 import MyCourses from './pages/MyCourses.jsx'
+import Checkout from './pages/Checkout.jsx'
+import CertificateView from './pages/CertificateView.jsx'
+import Settings from './pages/Settings.jsx'
+import Notifications from './pages/Notifications.jsx'
 
 function getPathname() {
   return typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '/'
@@ -63,9 +66,12 @@ export default function App() {
   if (path.startsWith('/course')) return <CourseDetails />
   if (path === '/contact' || path === '/contact/') return <Contact />
   if (path === '/login' || path === '/login/') return <Login />
+  if (path === '/checkout' || path === '/checkout/') return <Checkout />
   if (path === '/signup' || path === '/signup/' || path === '/register' || path === '/register/')
     return <SignUp />
-  if (path === '/app' || path === '/app/') return <HomeAfterSignIn />
   if (path === '/my-courses' || path === '/my-courses/') return <MyCourses />
+  if (path.startsWith('/certificate/')) return <CertificateView />
+  if (path === '/settings' || path === '/settings/') return <Settings />
+  if (path === '/notifications' || path === '/notifications/') return <Notifications />
   return <Home />
 }

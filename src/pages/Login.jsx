@@ -1,9 +1,12 @@
 import './auth.css'
 import AuthBrandSide from '../components/auth/AuthBrandSide.jsx'
 import { useI18n } from '../i18n/I18nProvider.jsx'
+import { useState } from 'react'
+import { login as apiLogin } from '../api/index.js'
 
 export default function Login() {
   const { dir, lang, t } = useI18n()
+  const [loading, setLoading] = useState(false)
   return (
     <div className="authPage" dir={dir} lang={lang}>
       <div className="authSplit">
@@ -15,9 +18,22 @@ export default function Login() {
           </p>
 
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault()
-              window.location.assign('/app')
+              if (loading) return
+              const form = new FormData(e.currentTarget)
+              const email = String(form.get('email') || '').trim()
+              const password = String(form.get('password') || '').trim()
+              setLoading(true)
+              try {
+                await apiLogin({ email, password })
+                window.location.assign('/')
+              } catch (err) {
+                console.error(err)
+                alert(lang === 'en' ? 'Login failed' : 'فشل تسجيل الدخول')
+              } finally {
+                setLoading(false)
+              }
             }}
             aria-label={t('nav.login')}
           >
@@ -60,8 +76,8 @@ export default function Login() {
               </a>
             </div>
 
-            <button className="authSubmit" type="submit">
-              {t('nav.login')}
+            <button className="authSubmit" type="submit" disabled={loading}>
+              {loading ? (lang === 'en' ? 'Signing in...' : 'جاري تسجيل الدخول...') : t('nav.login')}
             </button>
           </form>
 

@@ -10,20 +10,46 @@ import CTASection from '../components/home/CTASection.jsx'
 import './home.css'
 import './home-after.css'
 import { useI18n } from '../i18n/I18nProvider.jsx'
+import { useEffect, useState } from 'react'
+import { getHome } from '../api/index.js'
 
 export default function HomeAfterSignIn() {
   const { dir, lang } = useI18n()
+  const [home, setHome] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const data = await getHome({ lang })
+        if (!cancelled) setHome(data)
+      } catch (e) {
+        console.error(e)
+        if (!cancelled) setHome(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [lang])
+
   return (
     <div className="app app--home" dir={dir} lang={lang}>
       <Navbar authenticated homePath="/app" topBarTransparent logoHome />
       <main>
-        <HeroSection />
-        <FeaturesSection />
+        <HeroSection
+          heroTitle={home?.heroTitle}
+          heroBrand={home?.heroBrand}
+          heroSubtitle={home?.heroSubtitle}
+          heroCtaLabel={home?.heroCtaLabel}
+          heroCtaHref={home?.heroCtaHref}
+        />
+        <FeaturesSection items={home?.features} />
         <ContinueLearningSection />
         <CoursesSection />
-        <TestimonialsSection />
-        <StepsSection />
-        <CTASection />
+        <TestimonialsSection items={home?.testimonials} />
+        <StepsSection steps={home?.steps} />
+        <CTASection ctaTitle={home?.ctaTitle} ctaSub={home?.ctaSub} ctaBtn={home?.ctaBtn} ctaHref={home?.ctaHref} />
       </main>
       <Footer />
     </div>

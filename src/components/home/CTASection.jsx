@@ -1,7 +1,7 @@
 import { useI18n } from '../../i18n/I18nProvider.jsx'
 import { motion, useReducedMotion } from 'framer-motion'
 
-export default function CTASection() {
+export default function CTASection({ ctaTitle, ctaSub, ctaBtn, ctaHref }) {
   const { t } = useI18n()
   const reduceMotion = useReducedMotion()
   const enter = {
@@ -20,17 +20,17 @@ export default function CTASection() {
             <span className="ctaPanel__decorDots" />
           </div>
           <div className="ctaPanel__inner">
-            <h2 className="ctaPanel__title">{t('home.ctaTitle')}</h2>
+            <h2 className="ctaPanel__title">{ctaTitle || t('home.ctaTitle')}</h2>
             <p className="ctaPanel__subtitle">
-              {t('home.ctaSub')}
+              {ctaSub || t('home.ctaSub')}
             </p>
             <motion.a
               className="ctaPanel__btn"
-              href="#courses"
+              href={ctaHref || '#courses'}
               whileHover={reduceMotion ? undefined : { y: -2 }}
               whileTap={reduceMotion ? undefined : { y: 0 }}
             >
-              {t('home.ctaBtn')}
+              {ctaBtn || t('home.ctaBtn')}
             </motion.a>
           </div>
         </motion.div>

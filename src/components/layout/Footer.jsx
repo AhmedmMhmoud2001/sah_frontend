@@ -1,5 +1,7 @@
 import footerLogo from '../../assets/img_home/Frame 5.png'
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+import { useEffect, useMemo, useState } from 'react'
+import { getContactInfoCached } from '../../api/contactCache.js'
 
 function IconMail() {
   return (
@@ -42,6 +44,26 @@ function IconPin() {
   )
 }
 
+function IconWhatsApp() {
+  return (
+    <svg className="footer__contactIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 21a9 9 0 1 0-7.7-4.3L3 21l4.6-1.2A8.95 8.95 0 0 0 12 21Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.2 8.6c.2-.5.4-.5.7-.5h.6c.2 0 .5.1.6.4l.8 2c.1.3.1.6-.1.8l-.5.6c-.2.2-.2.5 0 .7.6 1.1 1.6 2 2.7 2.6.2.1.5.1.7-.1l.6-.5c.2-.2.5-.2.8-.1l2 .8c.3.1.4.4.4.6v.6c0 .3 0 .5-.5.7-.6.3-1.9.7-3.7 0-2.2-.8-4.1-2.7-5-4.9-.8-1.8-.4-3.1 0-3.7Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function SocialSvgLinkedIn() {
   return (
     <svg className="footer__socialIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -77,6 +99,47 @@ function SocialSvgFacebook() {
 export default function Footer() {
   const year = new Date().getFullYear()
   const { t } = useI18n()
+  const [contact, setContact] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const data = await getContactInfoCached()
+        if (!cancelled) setContact(data || {})
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const email = useMemo(() => contact?.email || 'info@smahacademy.com', [contact?.email])
+  const phone = useMemo(() => contact?.phone || '+966 50 123 4567', [contact?.phone])
+  const address = useMemo(() => contact?.address || t('contact.addressValue'), [contact?.address, t])
+  const whatsappDigits = useMemo(
+    () => (contact?.whatsapp ? String(contact.whatsapp).replace(/[^\d]/g, '') : ''),
+    [contact?.whatsapp],
+  )
+
+  function safeUrl(url) {
+    const raw = (url || '').trim()
+    if (!raw) return ''
+    if (/^https?:\/\//i.test(raw)) return raw
+    return `https://${raw}`
+  }
+
+  const socials = useMemo(
+    () => [
+      { label: 'LinkedIn', href: safeUrl(contact?.linkedin), Icon: SocialSvgLinkedIn },
+      { label: 'Instagram', href: safeUrl(contact?.instagram), Icon: SocialSvgInstagram },
+      { label: 'X', href: safeUrl(contact?.twitter), Icon: SocialSvgX },
+      { label: 'Facebook', href: safeUrl(contact?.facebook), Icon: SocialSvgFacebook },
+    ].filter((s) => !!s.href),
+    [contact?.facebook, contact?.instagram, contact?.linkedin, contact?.twitter],
+  )
 
   return (
     <footer className="footer" aria-label={t('footer.label')}>
@@ -153,35 +216,66 @@ export default function Footer() {
           <ul className="footer__list footer__contact">
             <li className="footer__contactRow">
               <IconMail />
-              <a className="footer__contactLink" href="mailto:info@smahacademy.com">
-                info@smahacademy.com
+              <a className="footer__contactLink" href={`mailto:${email}`}>
+                {email}
               </a>
             </li>
             <li className="footer__contactRow">
               <IconPhone />
-              <a className="footer__contactLink" dir="ltr" href="tel:+966501234567">
-                +966 50 123 4567
+              <a className="footer__contactLink" dir="ltr" href={`tel:${phone}`}>
+                {phone}
               </a>
             </li>
+            {whatsappDigits ? (
+              <li className="footer__contactRow">
+                <IconWhatsApp />
+                <a
+                  className="footer__contactLink"
+                  dir="ltr"
+                  href={`https://wa.me/${whatsappDigits}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  +{whatsappDigits}
+                </a>
+              </li>
+            ) : null}
             <li className="footer__contactRow">
               <IconPin />
-              <span className="footer__contactLink">{t('contact.addressValue')}</span>
+              <span className="footer__contactLink">{address}</span>
             </li>
           </ul>
 
           <div className="footer__social" aria-label={t('nav.social')}>
-            <a className="footer__socialBtn" href="#" aria-label="LinkedIn">
-              <SocialSvgLinkedIn />
-            </a>
-            <a className="footer__socialBtn" href="#" aria-label="Instagram">
-              <SocialSvgInstagram />
-            </a>
-            <a className="footer__socialBtn" href="#" aria-label="X">
-              <SocialSvgX />
-            </a>
-            <a className="footer__socialBtn" href="#" aria-label="Facebook">
-              <SocialSvgFacebook />
-            </a>
+            {socials.length ? (
+              socials.map(({ Icon, label, href }) => (
+                <a
+                  key={label}
+                  className="footer__socialBtn"
+                  href={href}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon />
+                </a>
+              ))
+            ) : (
+              <>
+                <a className="footer__socialBtn" href="#" aria-label="LinkedIn">
+                  <SocialSvgLinkedIn />
+                </a>
+                <a className="footer__socialBtn" href="#" aria-label="Instagram">
+                  <SocialSvgInstagram />
+                </a>
+                <a className="footer__socialBtn" href="#" aria-label="X">
+                  <SocialSvgX />
+                </a>
+                <a className="footer__socialBtn" href="#" aria-label="Facebook">
+                  <SocialSvgFacebook />
+                </a>
+              </>
+            )}
           </div>
         </div>
       </div>

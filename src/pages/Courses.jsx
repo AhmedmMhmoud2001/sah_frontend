@@ -6,8 +6,8 @@ import { useI18n } from '../i18n/I18nProvider.jsx'
 
 import clockIcon from '../assets/img_home/tabler_clock-filled.png'
 import studentsIcon from '../assets/img_home/mdi_account-student.png'
-import { courses as COURSES } from '../data/courses.js'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { getCourses, resolveAssetUrl } from '../api/index.js'
 
 function CourseMeta({ icon, label, value, variant }) {
   return (
@@ -88,14 +88,37 @@ export default function Courses() {
   const { dir, lang, t } = useI18n()
   const perPage = 8
   const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [courses, setCourses] = useState([])
+  const [pagination, setPagination] = useState({ page: 1, pages: 1 })
 
-  const totalPages = Math.max(1, Math.ceil(COURSES.length / perPage))
+  useEffect(() => {
+    let mounted = true
+    setLoading(true)
+    setError('')
+    ;(async () => {
+      try {
+        const data = await getCourses({ lang, page, limit: perPage })
+        if (!mounted) return
+        setCourses(data.courses || [])
+        setPagination(data.pagination || { page: page, pages: 1 })
+      } catch (e) {
+        if (!mounted) return
+        setError(t('msg.loading') || 'Failed to load courses')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [lang, page])
+
+  const totalPages = Math.max(1, pagination.pages || 1)
   const pageSafe = Math.min(Math.max(1, page), totalPages)
 
-  const pageItems = useMemo(() => {
-    const start = (pageSafe - 1) * perPage
-    return COURSES.slice(start, start + perPage)
-  }, [pageSafe])
+  const pageItems = useMemo(() => courses, [courses])
 
   function goTo(p) {
     const next = Math.min(Math.max(1, p), totalPages)
@@ -120,14 +143,24 @@ export default function Courses() {
             </header>
 
             <section className="coursesGrid coursesGrid--page" aria-label={t('nav.courses')}>
-              {pageItems.map((c) => (
-                <CourseCard
-                  key={c.id}
-                  {...c}
-                  title={lang === 'en' ? c.enTitle ?? c.title : c.title}
-                  shortDesc={lang === 'en' ? c.enShortDesc ?? c.shortDesc : c.shortDesc}
-                />
-              ))}
+              {loading ? (
+                <p style={{ padding: 16 }}>{t('msg.loading')}</p>
+              ) : error ? (
+                <p style={{ padding: 16 }}>{error}</p>
+              ) : (
+                pageItems.map((c) => (
+                  <CourseCard
+                    key={c.id}
+                    id={c.id}
+                    image={resolveAssetUrl(c.image)}
+                    duration={c.duration || '—'}
+                    students={c.students || '0'}
+                    price={lang === 'en' ? `${c.price} SAR` : `${c.price} ر.س`}
+                    title={lang === 'en' ? c.enTitle ?? c.title : c.title}
+                    shortDesc={lang === 'en' ? c.enShortDesc ?? c.shortDesc : c.shortDesc}
+                  />
+                ))
+              )}
             </section>
 
             {totalPages > 1 ? (

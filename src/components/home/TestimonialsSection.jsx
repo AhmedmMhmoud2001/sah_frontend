@@ -8,6 +8,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { motion, useReducedMotion } from 'framer-motion'
+import { resolveAssetUrl } from '../../api/index.js'
 
 const TESTIMONIALS = [
   {
@@ -90,7 +91,7 @@ function TestimonialCard({ name, role, text, rating, avatar }) {
   )
 }
 
-export default function TestimonialsSection() {
+export default function TestimonialsSection({ items }) {
   const { t, lang, dir } = useI18n()
   const reduceMotion = useReducedMotion()
   const enter = {
@@ -99,7 +100,7 @@ export default function TestimonialsSection() {
     viewport: { once: true, amount: 0.2 },
     transition: { duration: 0.6, ease: 'easeOut' },
   }
-  const items =
+  const fallbackItems =
     lang === 'en'
       ? [
           {
@@ -144,6 +145,17 @@ export default function TestimonialsSection() {
           },
         ]
       : TESTIMONIALS
+
+  const list = Array.isArray(items) && items.length
+    ? items.map((it, idx) => ({
+        name: it?.name || '',
+        role: it?.role || '',
+        text: it?.text || '',
+        rating: Number(it?.rating || 5),
+        avatar: it?.avatarUrl ? resolveAssetUrl(it.avatarUrl) : (fallbackItems[idx % fallbackItems.length]?.avatar || avatar1),
+      })).filter((x) => x.name || x.text || x.role)
+    : fallbackItems
+
   return (
     <section className="section" aria-label={t('home.testimonialsTitle')}>
       <div className="container">
@@ -168,7 +180,7 @@ export default function TestimonialsSection() {
               1100: { slidesPerView: 3, spaceBetween: 18 },
             }}
           >
-            {items.map((item, idx) => (
+            {list.map((item, idx) => (
               <SwiperSlide key={`${item.name}-${idx}`}>
                 <TestimonialCard {...item} />
               </SwiperSlide>

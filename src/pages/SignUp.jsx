@@ -1,9 +1,12 @@
 import './auth.css'
 import AuthBrandSide from '../components/auth/AuthBrandSide.jsx'
 import { useI18n } from '../i18n/I18nProvider.jsx'
+import { useState } from 'react'
+import { register as apiRegister } from '../api/index.js'
 
 export default function SignUp() {
   const { dir, lang, t } = useI18n()
+  const [loading, setLoading] = useState(false)
   return (
     <div className="authPage" dir={dir} lang={lang}>
       <div className="authSplit">
@@ -17,9 +20,23 @@ export default function SignUp() {
           </p>
 
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault()
-              window.location.assign('/app')
+              if (loading) return
+              const form = new FormData(e.currentTarget)
+              const name = String(form.get('name') || '').trim()
+              const email = String(form.get('email') || '').trim()
+              const password = String(form.get('password') || '').trim()
+              setLoading(true)
+              try {
+                await apiRegister({ name, email, phone: null, password })
+                window.location.assign('/')
+              } catch (err) {
+                console.error(err)
+                alert(lang === 'en' ? 'Sign up failed' : 'فشل إنشاء الحساب')
+              } finally {
+                setLoading(false)
+              }
             }}
             aria-label={t('nav.signup')}
           >
@@ -87,8 +104,8 @@ export default function SignUp() {
               </label>
             </div>
 
-            <button className="authSubmit" type="submit">
-              {t('nav.signup')}
+            <button className="authSubmit" type="submit" disabled={loading}>
+              {loading ? (lang === 'en' ? 'Creating account...' : 'جاري إنشاء الحساب...') : t('nav.signup')}
             </button>
           </form>
 

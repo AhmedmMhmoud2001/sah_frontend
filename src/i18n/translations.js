@@ -47,6 +47,7 @@ export const translations = {
       title: 'مرحباً بعودتك أكمل دورتك',
       subtitle: 'ابدأ من حيث توقفت في دورتك',
       continue: 'أكمل الدورة',
+      goMyCourses: 'الذهاب إلى دوراتي',
       completed: '{p}% مكتمل',
     },
     myCourses: {
@@ -94,6 +95,7 @@ export const translations = {
       player: 'مشغل الدورة',
       completed: '{done}/{total} فيديو مكتمل',
       videos: 'فيديوهات الدورة',
+      start: 'ابدأ التعلم',
       finishVideo: 'تم إنهاء الفيديو',
       quiz: 'اختبر',
       noQuiz: 'لا يوجد اختبار لهذا الفيديو',
@@ -212,6 +214,7 @@ export const translations = {
       title: 'Welcome back — continue your course',
       subtitle: 'Start where you left off',
       continue: 'Continue course',
+      goMyCourses: 'Go to My Courses',
       completed: '{p}% completed',
     },
     myCourses: {
@@ -259,6 +262,7 @@ export const translations = {
       player: 'Course player',
       completed: '{done}/{total} videos completed',
       videos: 'Course videos',
+      start: 'Start learning',
       finishVideo: 'Mark video completed',
       quiz: 'Quiz',
       noQuiz: 'No quiz for this video',

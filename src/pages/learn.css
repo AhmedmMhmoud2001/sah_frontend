@@ -106,6 +106,9 @@
   border: 1px solid rgba(15, 23, 42, 0.10);
   box-shadow: 0 14px 30px rgba(2, 6, 23, 0.06);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: min(76vh, 760px);
 }
 
 .learnList__header {
@@ -131,6 +134,8 @@
   list-style: none;
   display: grid;
   gap: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .learnItem {
