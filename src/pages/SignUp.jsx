@@ -2,59 +2,11 @@ import { useState } from 'react'
 import './auth.css'
 import AuthBrandSide from '../components/auth/AuthBrandSide.jsx'
 import { useI18n } from '../i18n/I18nProvider.jsx'
-<<<<<<< Updated upstream
-import { useState } from 'react'
 import { register as apiRegister } from '../api/index.js'
 
 export default function SignUp() {
   const { dir, lang, t } = useI18n()
   const [loading, setLoading] = useState(false)
-=======
-import { registerUser } from '../lib/auth.js'
-
-export default function SignUp() {
-  const { dir, lang, t } = useI18n()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    setErrorMessage('')
-    setSuccessMessage('')
-
-    const formData = new FormData(e.currentTarget)
-    const name = String(formData.get('name') || '').trim()
-    const email = String(formData.get('email') || '').trim()
-    const password = String(formData.get('password') || '')
-    const passwordConfirm = String(formData.get('passwordConfirm') || '')
-
-    if (!name || !email || !password || !passwordConfirm) {
-      setErrorMessage('Please fill all required fields.')
-      return
-    }
-
-    if (password !== passwordConfirm) {
-      setErrorMessage('Passwords do not match.')
-      return
-    }
-
-    try {
-      setIsSubmitting(true)
-      await registerUser({ name, email, password })
-
-      setSuccessMessage('Account created successfully. Redirecting...')
-      setTimeout(() => {
-        window.location.assign('/app')
-      }, 700)
-    } catch (error) {
-      setErrorMessage(error?.message || 'Something went wrong. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
->>>>>>> Stashed changes
   return (
     <div className="authPage" dir={dir} lang={lang}>
       <div className="authSplit">
@@ -67,7 +19,6 @@ export default function SignUp() {
             {t('auth.signupSub')}
           </p>
 
-<<<<<<< Updated upstream
           <form
             onSubmit={async (e) => {
               e.preventDefault()
@@ -76,9 +27,14 @@ export default function SignUp() {
               const name = String(form.get('name') || '').trim()
               const email = String(form.get('email') || '').trim()
               const password = String(form.get('password') || '').trim()
+              const passwordConfirm = String(form.get('passwordConfirm') || '').trim()
+              if (password !== passwordConfirm) {
+                alert(lang === 'en' ? 'Passwords do not match' : 'كلمتا المرور غير متطابقتين')
+                return
+              }
               setLoading(true)
               try {
-                await apiRegister({ name, email, phone: null, password })
+                await apiRegister({ name, email, phone: '', password })
                 window.location.assign('/')
               } catch (err) {
                 console.error(err)
@@ -89,9 +45,6 @@ export default function SignUp() {
             }}
             aria-label={t('nav.signup')}
           >
-=======
-          <form onSubmit={handleSubmit} aria-label={t('nav.signup')}>
->>>>>>> Stashed changes
             <div className="authField">
               <label className="authLabel" htmlFor="signup-name">
                 {t('auth.fullName')}
@@ -162,16 +115,8 @@ export default function SignUp() {
               </label>
             </div>
 
-<<<<<<< Updated upstream
             <button className="authSubmit" type="submit" disabled={loading}>
               {loading ? (lang === 'en' ? 'Creating account...' : 'جاري إنشاء الحساب...') : t('nav.signup')}
-=======
-            {errorMessage ? <p className="authMessage authMessage--error">{errorMessage}</p> : null}
-            {successMessage ? <p className="authMessage authMessage--success">{successMessage}</p> : null}
-
-            <button className="authSubmit" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating account...' : t('nav.signup')}
->>>>>>> Stashed changes
             </button>
           </form>
 

@@ -9,14 +9,11 @@ import Quiz from './pages/Quiz.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
 import MyCourses from './pages/MyCourses.jsx'
-<<<<<<< Updated upstream
 import Checkout from './pages/Checkout.jsx'
 import CertificateView from './pages/CertificateView.jsx'
 import Settings from './pages/Settings.jsx'
 import Notifications from './pages/Notifications.jsx'
-=======
 import Profile from './pages/Profile.jsx'
->>>>>>> Stashed changes
 
 function getPathname() {
   return typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '/'
@@ -74,12 +71,9 @@ export default function App() {
   if (path === '/signup' || path === '/signup/' || path === '/register' || path === '/register/')
     return <SignUp />
   if (path === '/my-courses' || path === '/my-courses/') return <MyCourses />
-<<<<<<< Updated upstream
   if (path.startsWith('/certificate/')) return <CertificateView />
   if (path === '/settings' || path === '/settings/') return <Settings />
   if (path === '/notifications' || path === '/notifications/') return <Notifications />
-=======
   if (path === '/profile' || path === '/profile/') return <Profile />
->>>>>>> Stashed changes
   return <Home />
 }

@@ -15,6 +15,14 @@ function getToken() {
 export function resolveAssetUrl(urlOrPath) {
   if (!urlOrPath) return ''
   if (/^https?:\/\//i.test(urlOrPath)) return urlOrPath
+  // Frontend-local assets should be resolved from the frontend origin (Vite),
+  // not from backend API origin.
+  if (urlOrPath.startsWith('/src/') || urlOrPath.startsWith('/assets/')) {
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return `${window.location.origin}${urlOrPath}`
+    }
+    return urlOrPath
+  }
   if (urlOrPath.startsWith('/')) return `${apiOrigin()}${urlOrPath}`
   return `${apiOrigin()}/${urlOrPath}`
 }
