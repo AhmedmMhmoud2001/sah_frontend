@@ -148,6 +148,25 @@
   filter: brightness(1.05);
 }
 
+.authSubmit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.authMessage {
+  margin: 6px 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.authMessage--error {
+  color: #b91c1c;
+}
+
+.authMessage--success {
+  color: #166534;
+}
+
 .authFooterNote {
   margin-top: 18px;
   text-align: center;

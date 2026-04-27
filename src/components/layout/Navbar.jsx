@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../../i18n/I18nProvider.jsx'
+<<<<<<< Updated upstream
 import { getContactInfoCached } from '../../api/contactCache.js'
 import { logout as apiLogout } from '../../api/index.js'
+=======
+import { clearAuthSession, getStoredUser, resolveApiUrl } from '../../lib/auth.js'
+>>>>>>> Stashed changes
 
 import navLogoHome from '../../assets/img_home/Frame 4.png'
 import navLogoDefault from '../../assets/img_home/Frame 5.png'
@@ -134,6 +138,7 @@ export default function Navbar({
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [user, setUser] = useState(getStoredUser())
   const langWrapRef = useRef(null)
   const [contact, setContact] = useState(null)
   const [auth, setAuth] = useState({ token: null, user: null })
@@ -241,6 +246,22 @@ export default function Navbar({
     [],
   )
 
+  const userName = user?.name || 'User'
+  const userEmail = user?.email || '-'
+  const avatarSrc = user?.avatarUrl ? resolveApiUrl(user.avatarUrl) : ''
+  const userInitials = useMemo(() => {
+    const parts = String(userName).trim().split(/\s+/).filter(Boolean)
+    if (!parts.length) return 'U'
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+  }, [userName])
+
+  function handleLogout() {
+    clearAuthSession()
+    setMenuOpen(false)
+    window.location.assign('/login')
+  }
+
   return (
     <header className={logoHome ? 'nav nav--home' : 'nav nav--inner'} id="home">
       <div
@@ -262,11 +283,14 @@ export default function Navbar({
 
           <div className="nav__topExtras">
             <div className="nav__social" aria-label={t('nav.social')}>
-              {social.map(({ Icon, ...s }) => (
+              {social.map((s) => {
+                const SocialIcon = s.Icon
+                return (
                 <IconLink key={s.label} href={s.href} label={s.label}>
-                  <Icon />
+                  <SocialIcon />
                 </IconLink>
-              ))}
+                )
+              })}
             </div>
 
             <div className="nav__lang" ref={langWrapRef}>
@@ -367,9 +391,16 @@ export default function Navbar({
                   className="nav__avatar"
                   aria-label={t('nav.accountMenu')}
                   aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen((v) => !v)}
+                  onClick={() => {
+                    setUser(getStoredUser())
+                    setMenuOpen((v) => !v)
+                  }}
                 >
+<<<<<<< Updated upstream
                   {initials}
+=======
+                  {avatarSrc ? <img src={avatarSrc} alt={userName} className="nav__avatarImg" /> : userInitials}
+>>>>>>> Stashed changes
                 </button>
 
                 {menuOpen ? (
@@ -384,10 +415,17 @@ export default function Navbar({
                       <div className="navMenu__header">
                         <div className="navMenu__user">
                           <p className="navMenu__name">{userName}</p>
+<<<<<<< Updated upstream
                           {userEmail ? <p className="navMenu__email">{userEmail}</p> : null}
                         </div>
                         <div className="navMenu__avatar" aria-hidden="true">
                           {initials}
+=======
+                          <p className="navMenu__email">{userEmail}</p>
+                        </div>
+                        <div className="navMenu__avatar" aria-hidden="true">
+                          {avatarSrc ? <img src={avatarSrc} alt="" className="nav__avatarImg" /> : userInitials}
+>>>>>>> Stashed changes
                         </div>
                       </div>
 
@@ -401,7 +439,7 @@ export default function Navbar({
                         <a
                           className="navMenu__item"
                           role="menuitem"
-                          href="/settings"
+                          href="/profile"
                         >
                           <span className="navMenu__label">{t('nav.settings')}</span>
                           <span className="navMenu__icon" aria-hidden="true">
@@ -410,17 +448,21 @@ export default function Navbar({
                         </a>
                       </div>
 
-                      <a
+                      <button
                         className="navMenu__logout"
+<<<<<<< Updated upstream
                         role="menuitem"
                         href="/"
+=======
+                        type="button"
+>>>>>>> Stashed changes
                         onClick={handleLogout}
                       >
                         {t('nav.logout')}
                         <span className="navMenu__logoutIcon" aria-hidden="true">
                           ↩
                         </span>
-                      </a>
+                      </button>
                     </div>
                   </>
                 ) : null}
@@ -464,7 +506,11 @@ export default function Navbar({
                     <span className="nav__bellBadge" aria-hidden="true" />
                   </a>
                   <a className="nav__avatar nav__avatar--full" href="/app">
+<<<<<<< Updated upstream
                     {initials}
+=======
+                    {avatarSrc ? <img src={avatarSrc} alt={userName} className="nav__avatarImg" /> : userInitials}
+>>>>>>> Stashed changes
                   </a>
                 </div>
               ) : (
